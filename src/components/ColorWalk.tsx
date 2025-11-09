@@ -1,4 +1,4 @@
-import { useRef, useState, useEffect } from 'react';
+import { useRef, useState } from 'react';
 import { Camera, Plus, X, Droplet } from 'lucide-react';
 import { Button } from './ui/button';
 import { isSimilarColor } from '../utils/colorUtils';
@@ -22,24 +22,6 @@ export function ColorWalk({ todayColor, todayColorName, collectedColors, onColor
   const previewCanvasRef = useRef<HTMLCanvasElement>(null);
   const imageRef = useRef<HTMLImageElement | null>(null);
 
-  // preview가 변경될 때 원본 캔버스에 이미지 그리기 (색상 추출용)
-  useEffect(() => {
-    if (!preview || !imageRef.current) return;
-
-    const img = imageRef.current;
-    const canvas = canvasRef.current;
-    
-    if (canvas && img.complete) {
-      const ctx = canvas.getContext('2d', { willReadFrequently: true });
-      if (ctx) {
-        canvas.width = img.width;
-        canvas.height = img.height;
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        ctx.drawImage(img, 0, 0);
-      }
-    }
-  }, [preview]);
-
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
@@ -53,36 +35,16 @@ export function ColorWalk({ todayColor, todayColorName, collectedColors, onColor
           setIsPickingColor(true);
           setPickedColor(null);
           
-          // 숨겨진 캔버스에 원본 이미지 그리기
+          // 색상 추출용 숨겨진 캔버스에 원본 이미지 그리기
           const canvas = canvasRef.current;
           if (canvas) {
             const ctx = canvas.getContext('2d', { willReadFrequently: true });
             if (ctx) {
               canvas.width = img.width;
               canvas.height = img.height;
-              // 캔버스 초기화
               ctx.clearRect(0, 0, canvas.width, canvas.height);
               ctx.drawImage(img, 0, 0);
             }
-          }
-
-          // 미리보기 캔버스 설정 (투명한 오버레이로 클릭 감지용)
-          const previewCanvas = previewCanvasRef.current;
-          if (previewCanvas) {
-            // 이미지의 표시 크기에 맞춰 캔버스 크기 설정
-            const maxWidth = 800;
-            const maxHeight = 600;
-            let displayWidth = img.width;
-            let displayHeight = img.height;
-
-            if (displayWidth > maxWidth || displayHeight > maxHeight) {
-              const ratio = Math.min(maxWidth / displayWidth, maxHeight / displayHeight);
-              displayWidth = displayWidth * ratio;
-              displayHeight = displayHeight * ratio;
-            }
-
-            previewCanvas.width = displayWidth;
-            previewCanvas.height = displayHeight;
           }
         };
         img.onerror = () => {
@@ -100,59 +62,34 @@ export function ColorWalk({ todayColor, todayColorName, collectedColors, onColor
   };
 
   const handleCanvasClick = (e: React.MouseEvent<HTMLCanvasElement>) => {
-    if (!isPickingColor) return;
+    if (!isPickingColor || !canvasRef.current || !imageRef.current) return;
 
     const canvas = canvasRef.current;
-    const previewCanvas = previewCanvasRef.current;
-    if (!canvas || !previewCanvas || !imageRef.current) return;
-
     const ctx = canvas.getContext('2d', { willReadFrequently: true });
     if (!ctx) return;
 
     const img = imageRef.current;
-    
-    // img 태그의 실제 표시 크기 계산
-    const imgElement = previewCanvas.parentElement?.querySelector('img');
+    const imgElement = e.currentTarget.parentElement?.querySelector('img');
     if (!imgElement) return;
     
     const imgRect = imgElement.getBoundingClientRect();
-    const imgDisplayWidth = imgRect.width;
-    const imgDisplayHeight = imgRect.height;
-    
-    // 클릭 좌표를 img 태그 기준으로 변환
     const clickX = e.clientX - imgRect.left;
     const clickY = e.clientY - imgRect.top;
     
-    // 클릭한 위치를 원본 이미지 좌표로 변환
-    const x = Math.floor((clickX / imgDisplayWidth) * img.width);
-    const y = Math.floor((clickY / imgDisplayHeight) * img.height);
+    // 클릭 위치를 원본 이미지 좌표로 변환
+    const x = Math.floor((clickX / imgRect.width) * img.width);
+    const y = Math.floor((clickY / imgRect.height) * img.height);
     
-    // 좌표 범위 검증
-    if (x < 0 || x >= canvas.width || y < 0 || y >= canvas.height) {
-      return;
-    }
+    if (x < 0 || x >= canvas.width || y < 0 || y >= canvas.height) return;
 
     try {
-      const imageData = ctx.getImageData(x, y, 1, 1);
-      const pixel = imageData.data;
-      
-      // RGBA 값 추출
-      const r = pixel[0];
-      const g = pixel[1];
-      const b = pixel[2];
-      
-      // 16진수로 변환 (항상 2자리로 패딩)
-      const toHex = (n: number) => {
-        const hex = n.toString(16);
-        return hex.length === 1 ? '0' + hex : hex;
-      };
-      
-      const hex = `#${toHex(r)}${toHex(g)}${toHex(b)}`.toUpperCase();
+      const pixel = ctx.getImageData(x, y, 1, 1).data;
+      const toHex = (n: number) => n.toString(16).padStart(2, '0');
+      const hex = `#${toHex(pixel[0])}${toHex(pixel[1])}${toHex(pixel[2])}`.toUpperCase();
       
       setPickedColor(hex);
       setIsPickingColor(false);
     } catch (error) {
-      console.error('색상 추출 오류:', error);
       toast.error('색상을 추출할 수 없습니다.');
     }
   };
@@ -160,11 +97,7 @@ export function ColorWalk({ todayColor, todayColorName, collectedColors, onColor
   const handleCanvasMouseMove = (e: React.MouseEvent<HTMLCanvasElement>) => {
     if (!isPickingColor) return;
 
-    const previewCanvas = previewCanvasRef.current;
-    if (!previewCanvas) return;
-
-    // img 태그의 실제 위치를 기준으로 커서 위치 계산
-    const imgElement = previewCanvas.parentElement?.querySelector('img');
+    const imgElement = e.currentTarget.parentElement?.querySelector('img');
     if (!imgElement) return;
 
     const imgRect = imgElement.getBoundingClientRect();

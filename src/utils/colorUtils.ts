@@ -39,20 +39,24 @@ export function hexToHSL(hex: string): { h: number; s: number; l: number } {
   };
 }
 
-// 두 색상이 비슷한 계열인지 확인 (허용 범위: 색조 60도, 채도/명도 40%)
+// 두 색상이 비슷한 계열인지 확인 (완화된 기준)
 export function isSimilarColor(color1: string, color2: string): boolean {
   const hsl1 = hexToHSL(color1);
   const hsl2 = hexToHSL(color2);
 
-  // 무채색(검정, 흰색, 회색) 체크
-  const isGrayscale1 = hsl1.s < 10;
-  const isGrayscale2 = hsl2.s < 10;
+  // 무채색(검정, 흰색, 회색) 체크 - 채도 20% 이하를 무채색으로 간주
+  const isGrayscale1 = hsl1.s <= 20;
+  const isGrayscale2 = hsl2.s <= 20;
 
-  // 둘 다 무채색이면 허용
-  if (isGrayscale1 && isGrayscale2) return true;
+  // 둘 다 무채색이면 명도 차이만 확인 (50% 이내면 허용)
+  if (isGrayscale1 && isGrayscale2) {
+    return Math.abs(hsl1.l - hsl2.l) <= 50;
+  }
 
-  // 하나만 무채색이면 불허
-  if (isGrayscale1 || isGrayscale2) return false;
+  // 하나만 무채색이면 명도 차이로 판단 (명도 차이 40% 이내면 허용)
+  if (isGrayscale1 || isGrayscale2) {
+    return Math.abs(hsl1.l - hsl2.l) <= 40;
+  }
 
   // 색조 차이 계산 (원형이므로 최소 각도 차이 계산)
   let hueDiff = Math.abs(hsl1.h - hsl2.h);
@@ -62,8 +66,8 @@ export function isSimilarColor(color1: string, color2: string): boolean {
   const satDiff = Math.abs(hsl1.s - hsl2.s);
   const lightDiff = Math.abs(hsl1.l - hsl2.l);
 
-  // 비슷한 색상 판정: 색조 차이 60도 이내, 채도/명도 차이 40% 이내
-  return hueDiff <= 60 && satDiff <= 40 && lightDiff <= 40;
+  // 비슷한 색상 판정: 색조 차이 90도 이내, 채도/명도 차이 50% 이내 (완화됨)
+  return hueDiff <= 90 && satDiff <= 50 && lightDiff <= 50;
 }
 
 // RGB로 밝기 조절
