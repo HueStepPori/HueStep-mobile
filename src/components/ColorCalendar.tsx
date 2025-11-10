@@ -299,11 +299,7 @@ export function ColorCalendar({ marbles }: ColorCalendarProps) {
                       />
                     </div>
                   </div>
-                ) : (
-                  <div className="absolute inset-0 top-5 flex items-center justify-center">
-                    <div className="w-3/4 h-3/4 aspect-square rounded-full bg-gray-50" />
-                  </div>
-                )}
+                ) : null}
               </button>
             );
           })}

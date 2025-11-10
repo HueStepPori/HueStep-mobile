@@ -327,11 +327,11 @@ export function ColorWalk({ todayColor, todayColorName, collectedColors, onColor
         <>
           <button
             onClick={() => setShowDropdown(!showDropdown)}
-            className="w-full aspect-square bg-gradient-to-br from-gray-50 to-gray-100 rounded-3xl border-2 border-dashed border-gray-200 flex flex-col items-center justify-center gap-4 hover:border-gray-300 transition-colors"
+            className="w-full max-h-96 aspect-square bg-gradient-to-br from-gray-50 to-gray-100 rounded-3xl border-2 border-dashed border-gray-200 flex flex-col items-center justify-center gap-3 hover:border-gray-300 transition-colors"
           >
-            <Camera className="w-16 h-16 text-gray-300" />
+            <Camera className="w-14 h-14 text-gray-300" />
             <div className="text-center">
-              <p className="text-gray-600">사진 추가하기</p>
+              <p className="text-gray-600 text-sm">사진 추가하기</p>
             </div>
           </button>
 
