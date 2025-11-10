@@ -77,7 +77,7 @@ export function TodayColor({ color, colorName, steps, onStartWalk, onColorNameCh
       </div>
 
       {/* 메인 컬러 bubble - 캘린더와 동일한 스타일 */}
-      <div className="relative w-56 h-56 mb-8">
+      <div className="relative w-28 h-28 mb-8">
         <div
           className="w-full h-full rounded-full overflow-hidden relative"
           style={{ isolation: 'isolate' }}

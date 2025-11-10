@@ -37,7 +37,7 @@ export function Navbar({ currentView, onNavigate }: NavbarProps) {
                   }`}
                 />
                 <span
-                  className={`text-[0.35rem] ${
+                  className={`text-[0.2rem] ${
                     isActive
                       ? 'text-[#9BCBF7]'
                       : 'text-gray-500'
