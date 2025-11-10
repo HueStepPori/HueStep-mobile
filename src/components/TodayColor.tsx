@@ -4,6 +4,54 @@ import { Input } from './ui/input';
 import { useState } from 'react';
 import { adjustBrightness } from '../utils/colorUtils';
 
+// HEX → rgba
+const hexToRgba = (hex: string, a = 1) => {
+  const h = hex.replace('#', '');
+  const v = h.length === 3 ? h.split('').map(c => c + c).join('') : h;
+  const n = parseInt(v, 16);
+  const r = (n >> 16) & 255, g = (n >> 8) & 255, b = n & 255;
+  return `rgba(${r}, ${g}, ${b}, ${a})`;
+};
+
+// ✅ 단일 색상 전용: 중앙 코어 + 대칭 글로우
+const getSingleBlobStyles = (color: string) => {
+  const styles: React.CSSProperties[] = [];
+
+  // (1) 중심 코어
+  styles.push({
+    position: 'absolute',
+    inset: 0,
+    borderRadius: '9999px',
+    background: `
+      radial-gradient(circle at 50% 45%,
+        ${hexToRgba(adjustBrightness(color, 8), 0.95)} 0%,
+        ${hexToRgba(color, 0.90)} 28%,
+        ${hexToRgba(color, 0.55)} 55%,
+        ${hexToRgba(color, 0.00)} 78%)
+    `,
+    filter: 'blur(0.8px)',
+    opacity: 1,
+  } as React.CSSProperties);
+
+  // (2) 균일한 바깥 글로우(대칭)
+  styles.push({
+    position: 'absolute',
+    inset: 0,
+    borderRadius: '9999px',
+    mixBlendMode: 'screen',
+    background: `
+      radial-gradient(circle at 50% 60%,
+        ${hexToRgba(color, 0.28)} 0%,
+        ${hexToRgba(color, 0.16)} 45%,
+        ${hexToRgba(color, 0.00)} 85%)
+    `,
+    filter: 'blur(1.5px)',
+    opacity: 0.95,
+  } as React.CSSProperties);
+
+  return styles;
+};
+
 interface TodayColorProps {
   color: string;
   colorName: string;
@@ -28,43 +76,67 @@ export function TodayColor({ color, colorName, steps, onStartWalk, onColorNameCh
         <span className="text-gray-500">오늘의 컬러</span>
       </div>
 
-      {/* 메인 컬러 bubble - 더 예쁘고 입체적인 효과 */}
+      {/* 메인 컬러 bubble - 캘린더와 동일한 스타일 */}
       <div className="relative w-56 h-56 mb-8">
-        {/* 메인 구슬 */}
-        <div 
-          className="w-full h-full rounded-full relative overflow-hidden"
-          style={{
-            background: `radial-gradient(circle at 30% 30%, ${adjustBrightness(color, 40)}, ${color} 45%, ${adjustBrightness(color, -20)} 100%)`,
-            boxShadow: `
-              0 10px 40px ${color}40,
-              inset -10px -10px 30px ${adjustBrightness(color, -30)}40,
-              inset 10px 10px 30px ${adjustBrightness(color, 50)}60
-            `,
-          }}
+        <div
+          className="w-full h-full rounded-full overflow-hidden relative"
+          style={{ filter: 'drop-shadow(0 10px 40px rgba(0,0,0,0.18))', isolation: 'isolate' }}
         >
-          {/* 유리 반사 - 좌상단 큰 하이라이트 */}
-          <div className="absolute top-[8%] left-[18%] w-[45%] h-[45%] rounded-full bg-white/50 blur-2xl" />
-          
-          {/* 보조 하이라이트 */}
-          <div className="absolute top-[15%] left-[25%] w-[30%] h-[30%] rounded-full bg-white/70 blur-xl" />
-          
-          {/* 작은 반짝임들 */}
-          <div className="absolute top-[20%] right-[22%] w-6 h-6 rounded-full bg-white/90 blur-sm" />
-          
-          {/* 측면 광택 */}
-          <div className="absolute top-1/2 -translate-y-1/2 right-[8%] w-[10%] h-[35%] rounded-full bg-white/15 blur-lg rotate-12" />
-          
-          {/* 하단 그림자 영역 */}
-          <div 
-            className="absolute bottom-0 inset-x-0 h-2/5 rounded-full"
+          {/* (A) 색 레이어 */}
+          {getSingleBlobStyles(color).map((style, idx) => (
+            <div key={idx} style={style} />
+          ))}
+
+          {/* (B) 내부 광원 */}
+          <div
+            className="absolute inset-0 rounded-full"
             style={{
-              background: `radial-gradient(ellipse at 50% 120%, ${adjustBrightness(color, -40)}60 0%, transparent 70%)`
+              mixBlendMode: 'screen',
+              background: `
+                radial-gradient(circle at 40% 35%,
+                  rgba(255,255,255,0.5) 0%,
+                  rgba(255,255,255,0.2) 30%,
+                  rgba(255,255,255,0) 65%)
+              `
+            }}
+          />
+
+          {/* (C) 림 라이트 */}
+          <div
+            className="absolute inset-0 rounded-full"
+            style={{
+              mixBlendMode: 'screen',
+              background: `
+                radial-gradient(circle,
+                  rgba(255,255,255,0) 60%,
+                  rgba(255,255,255,0.35) 80%,
+                  rgba(255,255,255,0) 85%)
+              `
+            }}
+          />
+
+          {/* (D) 작은 하이라이트 */}
+          <div
+            className="absolute rounded-full"
+            style={{
+              top: '24%', right: '26%', width: '18%', height: '18%',
+              background: 'radial-gradient(circle, rgba(255,255,255,0.9), rgba(255,255,255,0) 70%)',
+              filter: 'blur(1px)', mixBlendMode: 'screen'
+            }}
+          />
+
+          {/* (E) 안쪽 그림자 */}
+          <div
+            className="absolute inset-0 rounded-full"
+            style={{
+              background: 'radial-gradient(circle at 60% 68%, rgba(0,0,0,0.06), rgba(0,0,0,0) 55%)',
+              mixBlendMode: 'multiply'
             }}
           />
         </div>
-        
+
         {/* 바닥 그림자 */}
-        <div 
+        <div
           className="absolute -bottom-4 left-1/2 -translate-x-1/2 w-40 h-10 rounded-full blur-2xl opacity-30"
           style={{ backgroundColor: color }}
         />
