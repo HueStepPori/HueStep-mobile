@@ -186,14 +186,12 @@ export function ColorCalendar({ marbles }: ColorCalendarProps) {
               <div className="flex gap-2">
                 {selectedDay.colors.map((color, index) => (
                   <div key={index} className="flex-1 text-center">
-                    <div 
-                      className="w-full aspect-square rounded-xl mb-2 relative"
-                      style={{ 
-                        background: `radial-gradient(circle at 35% 35%, ${adjustBrightness(color, 35)}, ${color} 50%, ${adjustBrightness(color, -15)} 100%)`
+                    <div
+                      className="w-full aspect-square rounded-xl mb-2"
+                      style={{
+                        backgroundColor: color
                       }}
-                    >
-                      <div className="absolute top-[20%] left-[25%] w-[35%] h-[35%] rounded-full bg-white/50 blur-md" />
-                    </div>
+                    />
                     <p className="text-xs text-gray-400">{color}</p>
                   </div>
                 ))}
