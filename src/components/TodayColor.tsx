@@ -64,6 +64,9 @@ export function TodayColor({ color, colorName, steps, onStartWalk, onColorNameCh
   const [isEditingName, setIsEditingName] = useState(false);
   const [editedName, setEditedName] = useState(colorName);
 
+  // 기본 색상 설정 (color가 undefined인 경우)
+  const displayColor = color || '#8B5CF6';
+
   const handleSaveName = () => {
     onColorNameChange(editedName);
     setIsEditingName(false);
@@ -77,13 +80,13 @@ export function TodayColor({ color, colorName, steps, onStartWalk, onColorNameCh
       </div>
 
       {/* 메인 컬러 bubble - 캘린더와 동일한 스타일 */}
-      <div className="relative w-28 h-28 mb-8">
+      <div className="relative w-56 h-56 mb-8">
         <div
           className="w-full h-full rounded-full overflow-hidden relative"
           style={{ isolation: 'isolate' }}
         >
           {/* (A) 색 레이어 */}
-          {getSingleBlobStyles(color).map((style, idx) => (
+          {getSingleBlobStyles(displayColor).map((style, idx) => (
             <div key={idx} style={style} />
           ))}
 
@@ -171,7 +174,7 @@ export function TodayColor({ color, colorName, steps, onStartWalk, onColorNameCh
         onClick={onStartWalk}
         className="px-8 py-6 rounded-full shadow-lg text-white hover:opacity-90 transition-opacity"
         style={{
-          background: `linear-gradient(135deg, ${color}, ${adjustBrightness(color, -15)})`,
+          background: `linear-gradient(135deg, ${displayColor}, ${adjustBrightness(displayColor, -15)})`,
         }}
       >
         컬러 워크 시작하기
