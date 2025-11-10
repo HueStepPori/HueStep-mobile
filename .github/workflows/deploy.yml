@@ -18,11 +18,9 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      - name: Setup Node
-        uses: actions/setup-node@v4
+      - uses: actions/setup-node@v4
         with:
           node-version: 20
           cache: npm
@@ -33,13 +31,13 @@ jobs:
       - name: Build
         run: npm run build
 
-      # Pages 자동 활성화 + 환경 구성
+      # Pages 초기 생성/활성화 + 환경 구성
       - name: Setup Pages
         uses: actions/configure-pages@v5
         with:
           enablement: true
 
-      # SPA 라우팅(옵션) – 새로고침/딥링크 대응
+      # SPA 라우팅 새로고침/딥링크 대응
       - name: Copy 404.html
         run: cp dist/index.html dist/404.html || echo "skip"
 
@@ -55,6 +53,5 @@ jobs:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
-      - name: Deploy to GitHub Pages
-        id: deployment
+      - id: deployment
         uses: actions/deploy-pages@v4
