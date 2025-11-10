@@ -266,7 +266,7 @@ export function ColorWalk({ todayColor, todayColorName, collectedColors, onColor
       
       <div className="text-center mb-8">
         <h2 className="mb-2">컬러 워크</h2>
-        <p className="text-gray-500">주변에서 색을 찾아 사진을 찍어보세요</p>
+        <p className="text-gray-500 text-sm">주변에서 색을 찾아 사진을 찍어보세요</p>
       </div>
 
       {/* 오늘의 목표 색상 */}

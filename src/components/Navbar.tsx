@@ -23,23 +23,23 @@ export function Navbar({ currentView, onNavigate }: NavbarProps) {
               <button
                 key={id}
                 onClick={() => onNavigate(id)}
-                className={`flex flex-col items-center gap-1 px-6 py-2 rounded-2xl transition-all ${
+                className={`flex flex-col items-center gap-0.5 px-3 py-0.5 rounded-2xl transition-all ${
                   isActive
                     ? 'bg-gradient-to-r from-[#9BCBF7]/10 to-[#A8E6CF]/10'
                     : 'hover:bg-gray-50'
                 }`}
               >
-                <Icon 
-                  className={`w-6 h-6 ${
-                    isActive 
-                      ? 'text-[#9BCBF7]' 
+                <Icon
+                  className={`w-4 h-4 ${
+                    isActive
+                      ? 'text-[#9BCBF7]'
                       : 'text-gray-400'
                   }`}
                 />
-                <span 
-                  className={`text-xs ${
-                    isActive 
-                      ? 'text-[#9BCBF7]' 
+                <span
+                  className={`text-[0.35rem] ${
+                    isActive
+                      ? 'text-[#9BCBF7]'
                       : 'text-gray-500'
                   }`}
                 >
