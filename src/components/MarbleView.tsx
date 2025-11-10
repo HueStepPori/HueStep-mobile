@@ -59,8 +59,8 @@ export function MarbleView({ colors, steps, distance, date, onContinue, onShare 
           {/* 보조 하이라이트 */}
           <div className="absolute top-[18%] left-[28%] w-[25%] h-[25%] bg-white/60 rounded-full blur-xl" />
           
-          {/* 반짝임 효과들 */}
-          <motion.div
+                    {/* 반짝임 효과들 */}
+                    <motion.div
             animate={{ 
               opacity: [0.4, 1, 0.4],
               scale: [1, 1.1, 1]

@@ -50,8 +50,6 @@ export function TodayColor({ color, colorName, steps, onStartWalk, onColorNameCh
           
           {/* 작은 반짝임들 */}
           <div className="absolute top-[20%] right-[22%] w-6 h-6 rounded-full bg-white/90 blur-sm" />
-          <div className="absolute top-[28%] right-[28%] w-3 h-3 rounded-full bg-white" />
-          <div className="absolute top-[25%] left-[68%] w-2 h-2 rounded-full bg-white/80" />
           
           {/* 측면 광택 */}
           <div className="absolute top-1/2 -translate-y-1/2 right-[8%] w-[10%] h-[35%] rounded-full bg-white/15 blur-lg rotate-12" />
