@@ -60,19 +60,21 @@ const getBlobStyles = (colors: string[]) => {
   const radius = 42;
   const spread = 10;
   const sizePct = 58;
-  const alphaCenter = 0.65;
+  const alphaCenter = 0.8;
 
   const styles: React.CSSProperties[] = [];
 
-  // 중앙 아주 약한 보강(다색 섞일 때도 중심이 비지 않도록)
+  // 중앙 강한 보강(다색 섞일 때 중심이 뚜렷하게 보이도록)
   styles.push({
     position: 'absolute',
     inset: 0,
     borderRadius: '9999px',
-    mixBlendMode: 'screen',
+    mixBlendMode: 'lighten',
     background: `radial-gradient(circle at 50% 50%,
-      rgba(255,255,255,0.05) 0%,
-      rgba(255,255,255,0.00) 60%)`,
+      rgba(200,200,200,0.6) 0%,
+      rgba(180,180,180,0.3) 40%,
+      rgba(160,160,160,0.10) 70%,
+      rgba(255,255,255,0.00) 100%)`,
   } as React.CSSProperties);
 
   colors.forEach((c, i) => {
@@ -87,13 +89,13 @@ const getBlobStyles = (colors: string[]) => {
         position: 'absolute',
         inset: 0,
         borderRadius: '9999px',
-        mixBlendMode: 'screen',
+        mixBlendMode: 'lighten',
         background: `radial-gradient(circle at ${cx}% ${cy}%,
-          ${hexToRgba(adjustBrightness(c, 10), alphaCenter)} 0%,
-          ${hexToRgba(c, 0.10)} ${sizePct}%,
+          ${hexToRgba(c, alphaCenter)} 0%,
+          ${hexToRgba(c, 0.25)} ${sizePct}%,
           ${hexToRgba(c, 0)} ${sizePct + 12}%)`,
-        filter: 'blur(2px)',
-        opacity: 0.95,
+        filter: 'blur(1px)',
+        opacity: 1.0,
       } as React.CSSProperties);
     }
   });
@@ -229,9 +231,9 @@ export function ColorCalendar({ marbles }: ColorCalendarProps) {
                 </div>
 
                 {marble && marble.colors.length > 0 ? (
-                  <div className="absolute inset-0 flex items-center justify-center p-2">
+                  <div className="absolute inset-0 flex items-center justify-center p-1">
                     <div
-                      className="w-2/3 md:w-3/4 aspect-square rounded-full overflow-hidden"
+                      className="w-4/5 md:w-5/6 aspect-square rounded-full overflow-hidden"
                       style={{ isolation: 'isolate' }}
                     >
                       {/* (A) 색 레이어 */}
