@@ -12,6 +12,17 @@ const hexToRgba = (hex: string, a = 1) => {
   return `rgba(${r}, ${g}, ${b}, ${a})`;
 };
 
+// 다색을 단색으로 변환 (캘린더용): 랜덤하게 하나의 색 선택
+const getDisplayColor = (colors: string[], seed: string): string => {
+  if (colors.length === 0) return '#CCCCCC';
+  if (colors.length === 1) return colors[0];
+
+  // seed 기반 의사난수로 일정한 색상 선택 (새로고침해도 같은 날짜는 같은 색)
+  const seedNum = seed.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
+  const index = seedNum % colors.length;
+  return colors[index];
+};
+
 // ✅ 단일 색상 전용: 중앙 코어 + 대칭 글로우
 const getSingleBlobStyles = (color: string) => {
   const styles: React.CSSProperties[] = [];
@@ -237,10 +248,7 @@ export function ColorCalendar({ marbles }: ColorCalendarProps) {
                       style={{ isolation: 'isolate' }}
                     >
                       {/* (A) 색 레이어 */}
-                      {(marble.colors.length === 1
-                        ? getSingleBlobStyles(marble.colors[0])   // ✅ 단일 색 → 중앙 코어 방식
-                        : getBlobStyles(marble.colors)            // ✅ 다색 → 기존 분산 방울 방식
-                      ).map((style, idx) => (
+                      {getSingleBlobStyles(getDisplayColor(marble.colors, marble.date)).map((style, idx) => (
                         <div key={idx} style={style} />
                       ))}
 
