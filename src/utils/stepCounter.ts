@@ -79,8 +79,9 @@ export class StepCounter {
    */
   start(): Promise<boolean> {
     return new Promise((resolve) => {
-      if (typeof DeviceMotionEvent === 'undefined' || 
-          typeof (DeviceMotionEvent as any).requestPermission !== 'function') {
+      // iOS 13+ 권한 요청 확인
+      if (typeof DeviceMotionEvent !== 'undefined' && 
+          typeof (DeviceMotionEvent as any).requestPermission === 'function') {
         // iOS 13+ 권한 요청
         (DeviceMotionEvent as any)
           .requestPermission()
@@ -94,11 +95,12 @@ export class StepCounter {
             }
           })
           .catch(() => {
-            // 권한 요청이 지원되지 않으면 바로 시작
+            // 권한 요청 실패 시 바로 시작 시도
             this.setupListener();
             resolve(true);
           });
       } else {
+        // 권한 요청이 필요 없는 경우 (Android, 데스크톱 등)
         this.setupListener();
         resolve(true);
       }

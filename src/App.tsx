@@ -7,11 +7,13 @@ import { WeeklyReport } from './components/WeeklyReport';
 import { PaletteShare } from './components/PaletteShare';
 import { Navbar } from './components/Navbar';
 import { Auth } from './components/Auth';
+import { StepInputModal } from './components/StepInputModal';
 import { Toaster } from './components/ui/sonner';
 import { toast } from 'sonner';
 import { isSimilarColor } from './utils/colorUtils';
 import { getRecommendedColor, allColors } from './utils/weatherColorRecommendation';
 import { useAuth } from './contexts/AuthContext';
+import { useStepCounter } from './hooks/useStepCounter';
 import { 
   loadUserData, 
   saveUserData, 
@@ -29,11 +31,23 @@ export default function App() {
   const [currentView, setCurrentView] = useState<View>('home');
   const [todayColor, setTodayColor] = useState(allColors[0]);
   const [todayColorName, setTodayColorName] = useState(allColors[0].desc);
-  const [currentSteps, setCurrentSteps] = useState(0);
   const [collectedColors, setCollectedColors] = useState<CollectedColor[]>([]);
   const [marbles, setMarbles] = useState<DayMarble[]>([]);
   const [walkStarted, setWalkStarted] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [isStepModalOpen, setIsStepModalOpen] = useState(false);
+
+  // 만보기 훅 사용
+  const {
+    steps: currentSteps,
+    distance,
+    isCounting,
+    error: stepError,
+    startCounting,
+    stopCounting,
+    setStepsManually,
+    incrementSteps,
+  } = useStepCounter({ autoStart: false });
 
   // 사용자 데이터 로드
   useEffect(() => {
@@ -44,7 +58,7 @@ export default function App() {
             setMarbles(data.marbles || []);
             setCollectedColors(data.collectedColors || []);
             if (data.currentSteps) {
-              setCurrentSteps(data.currentSteps);
+              setStepsManually(data.currentSteps);
             }
             if (data.todayColor) {
               setTodayColor({ color: data.todayColor.color, desc: data.todayColor.desc });
@@ -65,7 +79,7 @@ export default function App() {
     } else {
       setLoading(false);
     }
-  }, [currentUser]);
+  }, [currentUser, setStepsManually]);
 
   // 오늘의 색상 추천 - 계절/날씨/시간 기반
   useEffect(() => {
@@ -74,15 +88,25 @@ export default function App() {
     setTodayColorName(recommendedColor.desc);
   }, []);
 
-  // 걸음 수 시뮬레이션
+  // 걸음 수를 Firestore에 주기적으로 저장
   useEffect(() => {
-    if (walkStarted && currentView === 'walk') {
-      const interval = setInterval(() => {
-        setCurrentSteps(prev => prev + Math.floor(Math.random() * 15) + 5);
-      }, 3000);
-      return () => clearInterval(interval);
+    if (currentUser && currentSteps > 0) {
+      const saveInterval = setInterval(async () => {
+        try {
+          await saveUserData(currentUser.uid, {
+            marbles,
+            collectedColors,
+            currentSteps,
+            todayColor: { color: todayColor.color, desc: todayColorName },
+          });
+        } catch (error) {
+          console.error('걸음 수 저장 실패:', error);
+        }
+      }, 30000); // 30초마다 저장
+
+      return () => clearInterval(saveInterval);
     }
-  }, [walkStarted, currentView]);
+  }, [currentUser, currentSteps, marbles, collectedColors, todayColor, todayColorName]);
 
   const handleStartWalk = () => {
     setWalkStarted(true);
@@ -95,7 +119,44 @@ export default function App() {
   };
 
   const handleStepsIncrement = () => {
-    setCurrentSteps(prev => prev + 1);
+    setIsStepModalOpen(true);
+  };
+
+  const handleStepModalSave = async (steps: number) => {
+    setStepsManually(steps);
+    if (currentUser) {
+      try {
+        await saveUserData(currentUser.uid, {
+          marbles,
+          collectedColors,
+          currentSteps: steps,
+          todayColor: { color: todayColor.color, desc: todayColorName },
+        });
+        toast.success('걸음 수가 저장되었습니다!');
+      } catch (error) {
+        console.error('걸음 수 저장 실패:', error);
+        toast.error('걸음 수 저장에 실패했습니다');
+      }
+    }
+  };
+
+  const handleStartStepCounter = async () => {
+    try {
+      const started = await startCounting();
+      if (started) {
+        toast.success('만보기가 시작되었습니다!');
+      } else {
+        toast.error('만보기 권한이 필요합니다. 설정에서 권한을 허용해주세요.');
+      }
+    } catch (error) {
+      console.error('만보기 시작 실패:', error);
+      toast.error('만보기를 시작할 수 없습니다.');
+    }
+  };
+
+  const handleStopStepCounter = () => {
+    stopCounting();
+    toast.success('만보기가 중지되었습니다.');
   };
 
   const handleColorCollected = async (color: string, imageUrl: string) => {
@@ -140,7 +201,7 @@ export default function App() {
       date: today,
       colors: collectedColors.map(c => c.color),
       steps: currentSteps,
-      distance: +(currentSteps * 0.0007).toFixed(1),
+      distance: distance,
     };
 
     // 기존 오늘 데이터가 있으면 업데이트, 없으면 추가
@@ -196,10 +257,11 @@ export default function App() {
 
   const handleLogout = async () => {
     try {
+      stopCounting(); // 만보기 중지
       await logout();
       setMarbles([]);
       setCollectedColors([]);
-      setCurrentSteps(0);
+      setStepsManually(0);
       setCurrentView('home');
       toast.success('로그아웃되었습니다');
     } catch (error) {
@@ -261,9 +323,13 @@ export default function App() {
             color={todayColor.color}
             colorName={todayColorName}
             steps={currentSteps}
+            isCounting={isCounting}
+            stepError={stepError}
             onStartWalk={handleStartWalk}
             onColorNameChange={handleColorNameChange}
             onStepsIncrement={handleStepsIncrement}
+            onStartStepCounter={handleStartStepCounter}
+            onStopStepCounter={handleStopStepCounter}
           />
         )}
 
@@ -282,7 +348,7 @@ export default function App() {
           <MarbleView
             colors={collectedColors.map(c => c.color)}
             steps={currentSteps}
-            distance={+(currentSteps * 0.0007).toFixed(1)}
+            distance={distance}
             date={new Date().toLocaleDateString('ko-KR', {
               year: 'numeric',
               month: 'long',
@@ -322,6 +388,14 @@ export default function App() {
           onNavigate={setCurrentView}
         />
       )}
+
+      {/* 걸음 수 입력 모달 */}
+      <StepInputModal
+        isOpen={isStepModalOpen}
+        currentSteps={currentSteps}
+        onClose={() => setIsStepModalOpen(false)}
+        onSave={handleStepModalSave}
+      />
     </div>
   );
 }

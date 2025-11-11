@@ -1,6 +1,7 @@
 import { initializeApp } from 'firebase/app';
 import { getAuth } from 'firebase/auth';
 import { getFirestore } from 'firebase/firestore';
+import { debugFirebaseConfig } from '../utils/debugFirebase';
 
 // Firebase 설정
 const firebaseConfig = {
@@ -22,6 +23,11 @@ if (!firebaseConfig.apiKey || firebaseConfig.apiKey === 'your-api-key') {
   console.error('VITE_FIREBASE_STORAGE_BUCKET=your-project.appspot.com');
   console.error('VITE_FIREBASE_MESSAGING_SENDER_ID=123456789');
   console.error('VITE_FIREBASE_APP_ID=your-app-id');
+} else {
+  // 개발 환경에서만 디버깅 정보 출력
+  if (import.meta.env.DEV) {
+    debugFirebaseConfig();
+  }
 }
 
 // Firebase 초기화

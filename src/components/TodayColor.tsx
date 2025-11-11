@@ -1,4 +1,4 @@
-import { Footprints, Sparkles, Edit2 } from 'lucide-react';
+import { Footprints, Sparkles, Edit2, Play, Square } from 'lucide-react';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
 import { useState } from 'react';
@@ -56,12 +56,27 @@ interface TodayColorProps {
   color: string;
   colorName: string;
   steps: number;
+  isCounting?: boolean;
+  stepError?: string | null;
   onStartWalk: () => void;
   onColorNameChange: (name: string) => void;
   onStepsIncrement: () => void;
+  onStartStepCounter?: () => void;
+  onStopStepCounter?: () => void;
 }
 
-export function TodayColor({ color, colorName, steps, onStartWalk, onColorNameChange, onStepsIncrement }: TodayColorProps) {
+export function TodayColor({ 
+  color, 
+  colorName, 
+  steps, 
+  isCounting = false,
+  stepError = null,
+  onStartWalk, 
+  onColorNameChange, 
+  onStepsIncrement,
+  onStartStepCounter,
+  onStopStepCounter
+}: TodayColorProps) {
   const [isEditingName, setIsEditingName] = useState(false);
   const [editedName, setEditedName] = useState(colorName);
 
@@ -165,13 +180,57 @@ export function TodayColor({ color, colorName, steps, onStartWalk, onColorNameCh
         </div>
       )}
 
-      {/* 걸음 수 표시 */}
-      <button
-        onClick={onStepsIncrement}
-        className="flex items-center justify-center text-gray-700 text-lg font-semibold cursor-pointer mb-2 hover:opacity-70 transition-opacity"
-      >
-        <span>{steps.toLocaleString()}걸음</span>
-      </button>
+      {/* 걸음 수 표시 및 만보기 컨트롤 */}
+      <div className="flex flex-col items-center gap-3 mb-4">
+        <button
+          onClick={onStepsIncrement}
+          className="flex items-center gap-2 text-gray-700 text-lg font-semibold cursor-pointer hover:opacity-70 transition-opacity"
+        >
+          <Footprints className="w-5 h-5" />
+          <span>{steps.toLocaleString()}걸음</span>
+        </button>
+
+        {/* 만보기 시작/중지 버튼 */}
+        {onStartStepCounter && onStopStepCounter && (
+          <div className="flex items-center gap-2">
+            {!isCounting ? (
+              <Button
+                onClick={onStartStepCounter}
+                variant="outline"
+                size="sm"
+                className="flex items-center gap-2"
+              >
+                <Play className="w-4 h-4" />
+                만보기 시작
+              </Button>
+            ) : (
+              <Button
+                onClick={onStopStepCounter}
+                variant="outline"
+                size="sm"
+                className="flex items-center gap-2 text-red-600 border-red-300"
+              >
+                <Square className="w-4 h-4" />
+                만보기 중지
+              </Button>
+            )}
+          </div>
+        )}
+
+        {/* 만보기 오류 메시지 */}
+        {stepError && (
+          <p className="text-xs text-red-500 text-center max-w-xs">
+            {stepError}
+          </p>
+        )}
+
+        {/* 만보기 작동 중 표시 */}
+        {isCounting && (
+          <p className="text-xs text-green-600 animate-pulse">
+            만보기 작동 중...
+          </p>
+        )}
+      </div>
 
       <Button
         onClick={onStartWalk}
