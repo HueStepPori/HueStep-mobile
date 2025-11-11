@@ -208,18 +208,18 @@ export function PaletteShare({ colors, date, onClose }: PaletteShareProps) {
     ctx.fillStyle = "#1f2937";
     ctx.font = `bold ${Math.round(26 * textScaleFactor * s)}px -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif`;
     ctx.textAlign = "left";
-    ctx.textBaseline = "alphabetic";
-    ctx.fillText(truncate(colorName, 16), x + 12 * s, y + h / 2 + 20 * s);
+    ctx.textBaseline = "top";
+    ctx.fillText(truncate(colorName, 16), x + 4 * s, y + h / 2 + 3 * s);
 
     // Hex 값 (중간)
     ctx.fillStyle = "#4b5563";
     ctx.font = `${Math.round(16 * textScaleFactor * s)}px -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif`;
-    ctx.fillText(`Hex: ${selectedColor.color}`, x + 12 * s, y + h / 2 + 38 * s);
+    ctx.fillText(`Hex: ${selectedColor.color}`, x + 4 * s, y + h / 2 + 19 * s);
 
     // 날짜 (가장 작게)
     ctx.fillStyle = "#9ca3af";
     ctx.font = `${Math.round(13 * textScaleFactor * s)}px -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif`;
-    ctx.fillText(date, x + 12 * s, y + h / 2 + 52 * s);
+    ctx.fillText(date, x + 4 * s, y + h / 2 + 31 * s);
 
     return canvas;
   };

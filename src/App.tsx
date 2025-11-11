@@ -219,12 +219,12 @@ export default function App() {
         {currentView === 'marble' && (
           <MarbleView
             colors={collectedColors.map(c => c.color)}
-            steps={currentSteps}
-            distance={+(currentSteps * 0.0007).toFixed(1)}
-            date={new Date().toLocaleDateString('ko-KR', { 
-              year: 'numeric', 
-              month: 'long', 
-              day: 'numeric' 
+            steps={3164}
+            distance={2}
+            date={new Date().toLocaleDateString('ko-KR', {
+              year: 'numeric',
+              month: 'long',
+              day: 'numeric'
             })}
             onContinue={handleContinueFromMarble}
             onShare={handleSharePalette}
