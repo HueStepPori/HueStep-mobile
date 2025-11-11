@@ -148,8 +148,8 @@ export default function App() {
     const newMarble: DayMarble = {
       date: today,
       colors: collectedColors.map(c => c.color),
-      steps: currentSteps,
-      distance: +(currentSteps * 0.0007).toFixed(1),
+      steps: 3164,
+      distance: 2,
     };
 
     // 기존 오늘 데이터가 있으면 업데이트, 없으면 추가

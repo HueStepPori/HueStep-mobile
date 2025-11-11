@@ -168,7 +168,7 @@ export function TodayColor({ color, colorName, steps, onStartWalk, onColorNameCh
       {/* 걸음 수 표시 */}
       <button
         onClick={onStepsIncrement}
-        className="flex items-center justify-center text-gray-700 text-lg font-semibold cursor-pointer mb-6 hover:opacity-70 transition-opacity"
+        className="flex items-center justify-center text-gray-700 text-lg font-semibold cursor-pointer mb-2 hover:opacity-70 transition-opacity"
       >
         <span>{steps.toLocaleString()}걸음</span>
       </button>

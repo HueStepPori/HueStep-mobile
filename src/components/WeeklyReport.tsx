@@ -190,8 +190,8 @@ export function WeeklyReport({ marbles, todayColor }: WeeklyReportProps) {
             const mainColor = marble.colors.length > 0 ? marble.colors[0] : '#e5e7eb';
 
             return (
-              <div key={marble.date} className="flex items-center gap-3 p-3 bg-white rounded-2xl">
-                <div className="text-sm text-gray-500 w-20 font-semibold">
+              <div key={marble.date} className="flex items-center gap-2 p-3 bg-white rounded-2xl">
+                <div className="text-sm text-gray-500 w-16 font-semibold">
                   {new Date(marble.date).toLocaleDateString('ko-KR', { month: 'short', day: 'numeric' })}
                 </div>
 
