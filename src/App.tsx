@@ -24,13 +24,12 @@ import {
 } from './services/firestoreService';
 
 type View = 'home' | 'walk' | 'calendar' | 'report' | 'marble' | 'share';
-
 export default function App() {
   const { currentUser, logout } = useAuth();
   const [currentView, setCurrentView] = useState<View>('home');
   const [todayColor, setTodayColor] = useState(allColors[0]);
   const [todayColorName, setTodayColorName] = useState(allColors[0].desc);
-  const [currentSteps, setCurrentSteps] = useState(5230);
+  const [currentSteps, setCurrentSteps] = useState(0);
   const [collectedColors, setCollectedColors] = useState<CollectedColor[]>([]);
   const [marbles, setMarbles] = useState<DayMarble[]>([]);
   const [walkStarted, setWalkStarted] = useState(false);
@@ -93,6 +92,10 @@ export default function App() {
 
   const handleColorNameChange = (name: string) => {
     setTodayColorName(name);
+  };
+
+  const handleStepsIncrement = () => {
+    setCurrentSteps(prev => prev + 1);
   };
 
   const handleColorCollected = async (color: string, imageUrl: string) => {
@@ -196,7 +199,7 @@ export default function App() {
       await logout();
       setMarbles([]);
       setCollectedColors([]);
-      setCurrentSteps(5230);
+      setCurrentSteps(0);
       setCurrentView('home');
       toast.success('로그아웃되었습니다');
     } catch (error) {
@@ -229,14 +232,14 @@ export default function App() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 pb-20">
       <Toaster />
-      
+
       {/* 헤더 */}
       <header className="bg-white shadow-sm sticky top-0 z-40">
         <div className="max-w-2xl mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <div className="w-8 h-8 rounded-full bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400" />
-              <h1 className="text-gray-800">HueColor</h1>
+              <h1 className="text-gray-800">HueStep</h1>
             </div>
             <div className="flex items-center gap-2">
               <span className="text-sm text-gray-500">{currentUser.email}</span>
@@ -260,6 +263,7 @@ export default function App() {
             steps={currentSteps}
             onStartWalk={handleStartWalk}
             onColorNameChange={handleColorNameChange}
+            onStepsIncrement={handleStepsIncrement}
           />
         )}
 
@@ -279,10 +283,10 @@ export default function App() {
             colors={collectedColors.map(c => c.color)}
             steps={currentSteps}
             distance={+(currentSteps * 0.0007).toFixed(1)}
-            date={new Date().toLocaleDateString('ko-KR', { 
-              year: 'numeric', 
-              month: 'long', 
-              day: 'numeric' 
+            date={new Date().toLocaleDateString('ko-KR', {
+              year: 'numeric',
+              month: 'long',
+              day: 'numeric'
             })}
             onContinue={handleContinueFromMarble}
             onShare={handleSharePalette}

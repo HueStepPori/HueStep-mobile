@@ -15,7 +15,7 @@ type Point = { x: number; y: number };
 // ---- Canvas / Frame constants ------------------------------------------------
 // Export will exactly match preview: we render preview in a square frame (1:1)
 // and export the same layout at higher pixel density.
-const PREVIEW_SIZE = 468; // CSS pixels for on-screen preview (square) - 1.3배 (360 * 1.3)
+const PREVIEW_SIZE = 300; // CSS pixels for on-screen preview (square) - 더 축소됨
 const EXPORT_SIZE = 2048; // canvas pixels for saved image (square)
 
 export function PaletteShare({ colors, date, onClose }: PaletteShareProps) {
@@ -208,18 +208,18 @@ export function PaletteShare({ colors, date, onClose }: PaletteShareProps) {
     ctx.fillStyle = "#1f2937";
     ctx.font = `bold ${Math.round(26 * textScaleFactor * s)}px -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif`;
     ctx.textAlign = "left";
-    ctx.textBaseline = "alphabetic";
-    ctx.fillText(truncate(colorName, 16), x + 12 * s, y + h / 2 + 20 * s);
+    ctx.textBaseline = "top";
+    ctx.fillText(truncate(colorName, 16), x + 4 * s, y + h / 2 + 3 * s);
 
     // Hex 값 (중간)
     ctx.fillStyle = "#4b5563";
     ctx.font = `${Math.round(16 * textScaleFactor * s)}px -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif`;
-    ctx.fillText(`Hex: ${selectedColor.color}`, x + 12 * s, y + h / 2 + 38 * s);
+    ctx.fillText(`Hex: ${selectedColor.color}`, x + 4 * s, y + h / 2 + 19 * s);
 
     // 날짜 (가장 작게)
     ctx.fillStyle = "#9ca3af";
     ctx.font = `${Math.round(13 * textScaleFactor * s)}px -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif`;
-    ctx.fillText(date, x + 12 * s, y + h / 2 + 52 * s);
+    ctx.fillText(date, x + 4 * s, y + h / 2 + 31 * s);
 
     return canvas;
   };
@@ -314,7 +314,7 @@ export function PaletteShare({ colors, date, onClose }: PaletteShareProps) {
   // ---- UI --------------------------------------------------------------------
   return (
     <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-6">
-      <div className="bg-white rounded-3xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+      <div className="bg-white rounded-3xl w-full max-w-3xl max-h-[90vh] overflow-y-auto">
         <div className="sticky top-0 bg-white border-b px-6 py-4 flex items-center justify-between rounded-t-3xl">
           <h3 className="text-base font-semibold">팔레트 공유</h3>
           <button onClick={onClose} className="p-2 hover:bg-gray-100 rounded-full transition-colors">
@@ -324,7 +324,7 @@ export function PaletteShare({ colors, date, onClose }: PaletteShareProps) {
 
         <div className="p-6 space-y-6">
           {/* 대표 사진 선택 */}
-          <section className="pb-8">
+          <section className="pb-8 sticky top-16 bg-white z-10">
             <p className="text-gray-500 mb-4">대표 사진 선택</p>
             <div className="flex gap-2 flex-wrap overflow-x-auto pb-1 scrollbar-hide">
               {colors.map((item, index) => (

@@ -12,6 +12,17 @@ const hexToRgba = (hex: string, a = 1) => {
   return `rgba(${r}, ${g}, ${b}, ${a})`;
 };
 
+// 다색을 단색으로 변환 (캘린더용): 랜덤하게 하나의 색 선택
+const getDisplayColor = (colors: string[], seed: string): string => {
+  if (colors.length === 0) return '#CCCCCC';
+  if (colors.length === 1) return colors[0];
+
+  // seed 기반 의사난수로 일정한 색상 선택 (새로고침해도 같은 날짜는 같은 색)
+  const seedNum = seed.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
+  const index = seedNum % colors.length;
+  return colors[index];
+};
+
 // ✅ 단일 색상 전용: 중앙 코어 + 대칭 글로우
 const getSingleBlobStyles = (color: string) => {
   const styles: React.CSSProperties[] = [];
@@ -60,19 +71,21 @@ const getBlobStyles = (colors: string[]) => {
   const radius = 42;
   const spread = 10;
   const sizePct = 58;
-  const alphaCenter = 0.65;
+  const alphaCenter = 0.8;
 
   const styles: React.CSSProperties[] = [];
 
-  // 중앙 아주 약한 보강(다색 섞일 때도 중심이 비지 않도록)
+  // 중앙 강한 보강(다색 섞일 때 중심이 뚜렷하게 보이도록)
   styles.push({
     position: 'absolute',
     inset: 0,
     borderRadius: '9999px',
-    mixBlendMode: 'screen',
+    mixBlendMode: 'lighten',
     background: `radial-gradient(circle at 50% 50%,
-      rgba(255,255,255,0.05) 0%,
-      rgba(255,255,255,0.00) 60%)`,
+      rgba(200,200,200,0.6) 0%,
+      rgba(180,180,180,0.3) 40%,
+      rgba(160,160,160,0.10) 70%,
+      rgba(255,255,255,0.00) 100%)`,
   } as React.CSSProperties);
 
   colors.forEach((c, i) => {
@@ -87,13 +100,13 @@ const getBlobStyles = (colors: string[]) => {
         position: 'absolute',
         inset: 0,
         borderRadius: '9999px',
-        mixBlendMode: 'screen',
+        mixBlendMode: 'lighten',
         background: `radial-gradient(circle at ${cx}% ${cy}%,
-          ${hexToRgba(adjustBrightness(c, 10), alphaCenter)} 0%,
-          ${hexToRgba(c, 0.10)} ${sizePct}%,
+          ${hexToRgba(c, alphaCenter)} 0%,
+          ${hexToRgba(c, 0.25)} ${sizePct}%,
           ${hexToRgba(c, 0)} ${sizePct + 12}%)`,
-        filter: 'blur(2px)',
-        opacity: 0.95,
+        filter: 'blur(1px)',
+        opacity: 1.0,
       } as React.CSSProperties);
     }
   });
@@ -161,8 +174,8 @@ export function ColorCalendar({ marbles }: ColorCalendarProps) {
   return (
     <div className="px-6 py-8 max-w-2xl mx-auto">
       <div className="text-center mb-8">
-        <h2 className="mb-2">컬러 캘린더</h2>
-        <p className="text-gray-500">당신의 걸음이 색으로 기록됩니다</p>
+        <h2 className="mb-2 text-2xl font-bold">컬러 캘린더</h2>
+        <p className="text-gray-500 text-base">당신의 걸음이 색으로 기록됩니다</p>
       </div>
 
       {/* 월 네비게이션 */}
@@ -189,16 +202,16 @@ export function ColorCalendar({ marbles }: ColorCalendarProps) {
       {/* 캘린더 그리드 */}
       <div className="bg-white rounded-3xl p-6 shadow-sm mb-6">
         {/* 요일 헤더 */}
-        <div className="grid grid-cols-7 gap-2 mb-4">
+        <div className="grid grid-cols-7 gap-3 mb-4">
           {weekDays.map(day => (
-            <div key={day} className="text-center text-gray-400 py-2">
+            <div key={day} className="text-center text-gray-400 py-2 font-semibold">
               {day}
             </div>
           ))}
         </div>
 
         {/* 날짜 그리드 */}
-        <div className="grid grid-cols-7 gap-2">
+        <div className="grid grid-cols-7 gap-3">
           {/* 빈 칸 */}
           {Array.from({ length: startingDayOfWeek }).map((_, index) => (
             <div key={`empty-${index}`} className="aspect-square" />
@@ -216,29 +229,26 @@ export function ColorCalendar({ marbles }: ColorCalendarProps) {
               <button
                 key={day}
                 onClick={() => handleDayClick(day)}
-                className={`aspect-square rounded-2xl relative transition-all ${
-                  isSelected 
-                    ? 'ring-4 ring-blue-400' 
-                    : isToday 
-                    ? 'ring-2 ring-gray-300' 
+                className={`aspect-square rounded-2xl relative transition-all bg-white ${
+                  isSelected
+                    ? 'ring-4 ring-blue-400'
+                    : isToday
+                    ? 'ring-2 ring-gray-300'
                     : ''
                 }`}
               >
-                <div className="absolute top-1 left-1/2 -translate-x-1/2 text-xs text-gray-500 z-10">
+                <div className="absolute top-1 left-1/2 -translate-x-1/2 text-sm text-gray-500 z-10 font-semibold">
                   {day}
                 </div>
-                
+
                 {marble && marble.colors.length > 0 ? (
-                  <div className="absolute inset-0 flex items-center justify-center p-2">
+                  <div className="absolute inset-0 flex items-center justify-center p-1">
                     <div
-                      className="w-2/3 md:w-3/4 aspect-square rounded-full overflow-hidden"
+                      className="w-4/5 md:w-5/6 aspect-square rounded-full overflow-hidden"
                       style={{ isolation: 'isolate' }}
                     >
                       {/* (A) 색 레이어 */}
-                      {(marble.colors.length === 1
-                        ? getSingleBlobStyles(marble.colors[0])   // ✅ 단일 색 → 중앙 코어 방식
-                        : getBlobStyles(marble.colors)            // ✅ 다색 → 기존 분산 방울 방식
-                      ).map((style, idx) => (
+                      {getSingleBlobStyles(getDisplayColor(marble.colors, marble.date)).map((style, idx) => (
                         <div key={idx} style={style} />
                       ))}
 
@@ -309,22 +319,22 @@ export function ColorCalendar({ marbles }: ColorCalendarProps) {
       {/* 선택된 날짜 상세 정보 */}
       {selectedDay && (
         <div className="bg-white rounded-3xl p-6 shadow-lg">
-          <h3 className="mb-4">{selectedDay.date}</h3>
-          
+          <h3 className="mb-4 text-xl font-bold">{selectedDay.date}</h3>
+
           <div className="grid grid-cols-2 gap-4 mb-6">
             <div>
-              <p className="text-gray-500 mb-1">걸음 수</p>
-              <p className="text-gray-800">{selectedDay.steps.toLocaleString()}걸음</p>
+              <p className="text-gray-500 mb-1 font-semibold">걸음 수</p>
+              <p className="text-gray-800 text-lg font-bold">{selectedDay.steps.toLocaleString()}걸음</p>
             </div>
             <div>
-              <p className="text-gray-500 mb-1">이동 거리</p>
-              <p className="text-gray-800">{selectedDay.distance}km</p>
+              <p className="text-gray-500 mb-1 font-semibold">이동 거리</p>
+              <p className="text-gray-800 text-lg font-bold">{selectedDay.distance}km</p>
             </div>
           </div>
 
           {selectedDay.colors.length > 0 && (
             <div>
-              <p className="text-gray-500 mb-3">수집한 색상</p>
+              <p className="text-gray-500 mb-3 font-semibold text-lg">수집한 색상</p>
               <div className="flex gap-2">
                 {selectedDay.colors.map((color, index) => (
                   <div key={index} className="flex-1 text-center">
@@ -334,7 +344,7 @@ export function ColorCalendar({ marbles }: ColorCalendarProps) {
                         backgroundColor: color
                       }}
                     />
-                    <p className="text-xs text-gray-400">{color}</p>
+                    <p className="text-sm text-gray-400 font-medium">{color}</p>
                   </div>
                 ))}
               </div>
@@ -347,7 +357,7 @@ export function ColorCalendar({ marbles }: ColorCalendarProps) {
               setSelectedDate(null);
             }}
             variant="outline"
-            className="w-full mt-6"
+            className="w-full mt-6 text-lg font-semibold"
           >
             닫기
           </Button>

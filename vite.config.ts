@@ -1,4 +1,3 @@
-// vite.config.ts
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react-swc'
 
@@ -6,5 +5,5 @@ const isProd = process.env.GITHUB_ACTIONS === 'true' || process.env.NODE_ENV ===
 
 export default defineConfig({
   plugins: [react()],
-  base: isProd ? '/HueStep/' : '/',
+  base: isProd ? '/HueStep-mobile/' : '/',  // ← 저장소명과 같게
 })
