@@ -47,7 +47,7 @@ export default function App() {
               setCurrentSteps(data.currentSteps);
             }
             if (data.todayColor) {
-              setTodayColor({ color: data.todayColor.color, desc: data.todayColor.desc });
+              setTodayColor({ color: data.todayColor.color, name: data.todayColor.name, desc: data.todayColor.desc });
               setTodayColorName(data.todayColor.desc);
             }
           } else {
@@ -158,7 +158,7 @@ export default function App() {
           marbles: [...marbles.filter(m => m.date !== today), newMarble],
           collectedColors,
           currentSteps,
-          todayColor: { color: todayColor.color, desc: todayColorName },
+          todayColor: { color: todayColor.color, name: todayColor.name, desc: todayColorName },
         });
       } catch (error) {
         console.error('데이터 저장 실패:', error);
