@@ -63,17 +63,15 @@ const generateSampleMarbles = (): DayMarble[] => {
 
     // 선택된 팔레트에서 1~2개 색상 선택 (날짜 기반 고정)
     const numColors = Math.floor(seededRandom(dateSeed) * 2) + 1;
-    const colors = Array.from({ length: numColors }, (_, idx) =>
-      palette[idx % palette.length]
-    );
+    const colors = palette.slice(0, numColors);
 
     // 11-11 날짜는 고정값 사용
     if (dateStr === '2025-11-11') {
       marbles.push({
         date: dateStr,
-        colors,
+        colors: ['#73858F', '#92BDE8', '#12498C', '#346DB4'],
         steps: 3164,
-        distance: 2.1,
+        distance: 2,
       });
     } else {
       marbles.push({
