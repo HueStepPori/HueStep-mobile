@@ -109,7 +109,6 @@ service cloud.firestore {
   - `VITE_FIREBASE_API_KEY`
   - `VITE_FIREBASE_AUTH_DOMAIN`
   - `VITE_FIREBASE_PROJECT_ID`
-  - 등등...
 
 ## 아키텍처 패턴
 
@@ -147,19 +146,18 @@ src/
 - 실시간 업데이트 (필요 시 `onSnapshot` 사용 가능)
 - 오프라인 지원 (Firestore 기본 기능)
 
-## 배포 준비
+## 배포
 
 ### 환경 변수 관리
 - 개발: `.env` 파일
 - 프로덕션: 배포 플랫폼 환경 변수 설정
 
 ### 보안 고려사항
-- ✅ API 키는 클라이언트에 노출되지만 Firestore 보안 규칙으로 보호
-- ✅ 사용자는 자신의 데이터만 접근 가능
-- ✅ 인증되지 않은 사용자는 앱 사용 불가
+- API 키는 클라이언트에 노출되지만 Firestore 보안 규칙으로 보호
+- 사용자는 자신의 데이터만 접근 가능
+- 인증되지 않은 사용자는 앱 사용 불가
 
 ## 성능 최적화
-
 - **Vite** - 빠른 HMR (Hot Module Replacement)
 - **SWC** - 빠른 컴파일
 - **Firestore 인덱싱** - 자동 인덱스 관리
