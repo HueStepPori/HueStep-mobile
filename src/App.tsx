@@ -6,86 +6,67 @@ import { ColorCalendar } from './components/ColorCalendar';
 import { WeeklyReport } from './components/WeeklyReport';
 import { PaletteShare } from './components/PaletteShare';
 import { Navbar } from './components/Navbar';
+import { Auth } from './components/Auth';
 import { Toaster } from './components/ui/sonner';
 import { toast } from 'sonner';
 import { isSimilarColor } from './utils/colorUtils';
 import { getRecommendedColor, allColors } from './utils/weatherColorRecommendation';
-
-interface DayMarble {
-  date: string;
-  colors: string[];
-  steps: number;
-  distance: number;
-}
-
-interface CollectedColor {
-  color: string;
-  imageUrl: string;
-}
+import { useAuth } from './contexts/AuthContext';
+import { 
+  loadUserData, 
+  saveUserData, 
+  updateMarble, 
+  addCollectedColor, 
+  removeCollectedColor,
+  clearCollectedColors,
+  DayMarble,
+  CollectedColor
+} from './services/firestoreService';
 
 type View = 'home' | 'walk' | 'calendar' | 'report' | 'marble' | 'share';
 
-// 날짜 기반 시드로 고정된 '랜덤' 값 생성
-const seededRandom = (seed: number): number => {
-  const x = Math.sin(seed) * 10000;
-  return x - Math.floor(x);
-};
-
-// 샘플 데이터 생성 - 다양한 색상 (날짜 기반 고정)
-const generateSampleMarbles = (): DayMarble[] => {
-  const marbles: DayMarble[] = [];
-  const today = new Date();
-
-  // 다양한 색상 팔레트
-  const colorPalettes = [
-    ['#8B5CF6', '#A78BFA'], // 보라색
-    ['#FBBF24', '#FCD34D'], // 노란색
-    ['#10B981', '#34D399'], // 초록색
-    ['#3B82F6', '#60A5FA'], // 파란색
-    ['#9CA3AF', '#D1D5DB'], // 회색
-    ['#EC4899', '#F472B6'], // 핑크색
-    ['#F97316', '#FB923C'], // 주황색
-    ['#06B6D4', '#22D3EE'], // 청록색
-    ['#6366F1', '#818CF8'], // 인디고
-    ['#D946EF', '#E879F9'], // 마젠타
-  ];
-
-  for (let i = 14; i >= 0; i--) {
-    const date = new Date(today);
-    date.setDate(date.getDate() - i);
-    const dateStr = date.toISOString().split('T')[0];
-
-    // 날짜를 숫자로 변환하여 시드로 사용
-    const dateSeed = parseInt(dateStr.replace(/-/g, ''));
-
-    // 각 날짜마다 다양한 색상 팔레트 중 선택 (날짜 기반 고정)
-    const palette = colorPalettes[i % colorPalettes.length];
-
-    // 선택된 팔레트에서 1~2개 색상 선택 (날짜 기반 고정)
-    const numColors = Math.floor(seededRandom(dateSeed) * 2) + 1;
-    const colors = Array.from({ length: numColors }, (_, idx) =>
-      palette[idx % palette.length]
-    );
-
-    marbles.push({
-      date: dateStr,
-      colors,
-      steps: Math.floor(seededRandom(dateSeed + 1) * 8000) + 2000,
-      distance: +(seededRandom(dateSeed + 2) * 5 + 1).toFixed(1),
-    });
-  }
-
-  return marbles;
-};
-
 export default function App() {
+  const { currentUser, logout } = useAuth();
   const [currentView, setCurrentView] = useState<View>('home');
   const [todayColor, setTodayColor] = useState(allColors[0]);
   const [todayColorName, setTodayColorName] = useState(allColors[0].desc);
   const [currentSteps, setCurrentSteps] = useState(5230);
   const [collectedColors, setCollectedColors] = useState<CollectedColor[]>([]);
-  const [marbles, setMarbles] = useState<DayMarble[]>(generateSampleMarbles());
+  const [marbles, setMarbles] = useState<DayMarble[]>([]);
   const [walkStarted, setWalkStarted] = useState(false);
+  const [loading, setLoading] = useState(true);
+
+  // 사용자 데이터 로드
+  useEffect(() => {
+    if (currentUser) {
+      loadUserData(currentUser.uid)
+        .then((data) => {
+          if (data) {
+            setMarbles(data.marbles || []);
+            setCollectedColors(data.collectedColors || []);
+            if (data.currentSteps) {
+              setCurrentSteps(data.currentSteps);
+            }
+            if (data.todayColor) {
+              setTodayColor({ color: data.todayColor.color, desc: data.todayColor.desc });
+              setTodayColorName(data.todayColor.desc);
+            }
+          } else {
+            // 데이터가 없으면 빈 배열로 시작
+            setMarbles([]);
+            setCollectedColors([]);
+          }
+          setLoading(false);
+        })
+        .catch((error) => {
+          console.error('데이터 로드 실패:', error);
+          toast.error('데이터를 불러오는데 실패했습니다');
+          setLoading(false);
+        });
+    } else {
+      setLoading(false);
+    }
+  }, [currentUser]);
 
   // 오늘의 색상 추천 - 계절/날씨/시간 기반
   useEffect(() => {
@@ -114,22 +95,43 @@ export default function App() {
     setTodayColorName(name);
   };
 
-  const handleColorCollected = (color: string, imageUrl: string) => {
-    setCollectedColors(prev => [...prev, { color, imageUrl }]);
+  const handleColorCollected = async (color: string, imageUrl: string) => {
+    const newColor: CollectedColor = { color, imageUrl };
+    setCollectedColors(prev => [...prev, newColor]);
+    
+    if (currentUser) {
+      try {
+        await addCollectedColor(currentUser.uid, newColor);
+      } catch (error) {
+        console.error('색상 저장 실패:', error);
+        toast.error('색상 저장에 실패했습니다');
+      }
+    }
+    
     toast.success('색상이 추가되었습니다!', {
       description: color,
     });
   };
 
-  const handleColorDeleted = (index: number) => {
+  const handleColorDeleted = async (index: number) => {
     const deletedColor = collectedColors[index];
     setCollectedColors(prev => prev.filter((_, i) => i !== index));
+    
+    if (currentUser) {
+      try {
+        await removeCollectedColor(currentUser.uid, index);
+      } catch (error) {
+        console.error('색상 삭제 실패:', error);
+        toast.error('색상 삭제에 실패했습니다');
+      }
+    }
+    
     toast.success('색상이 삭제되었습니다!', {
       description: deletedColor.color,
     });
   };
 
-  const handleFinishWalk = () => {
+  const handleFinishWalk = async () => {
     const today = new Date().toISOString().split('T')[0];
     const newMarble: DayMarble = {
       date: today,
@@ -143,6 +145,23 @@ export default function App() {
       const filtered = prev.filter(m => m.date !== today);
       return [...filtered, newMarble];
     });
+
+    // Firestore에 저장
+    if (currentUser) {
+      try {
+        await updateMarble(currentUser.uid, newMarble);
+        // 전체 사용자 데이터도 저장 (상태 동기화)
+        await saveUserData(currentUser.uid, {
+          marbles: [...marbles.filter(m => m.date !== today), newMarble],
+          collectedColors,
+          currentSteps,
+          todayColor: { color: todayColor.color, desc: todayColorName },
+        });
+      } catch (error) {
+        console.error('데이터 저장 실패:', error);
+        toast.error('데이터 저장에 실패했습니다');
+      }
+    }
 
     setCurrentView('marble');
   };
@@ -159,10 +178,53 @@ export default function App() {
     setCurrentView('marble');
   };
 
-  const handleResetWalk = () => {
+  const handleResetWalk = async () => {
     setCollectedColors([]);
     setWalkStarted(false);
+    
+    if (currentUser) {
+      try {
+        await clearCollectedColors(currentUser.uid);
+      } catch (error) {
+        console.error('색상 초기화 실패:', error);
+      }
+    }
   };
+
+  const handleLogout = async () => {
+    try {
+      await logout();
+      setMarbles([]);
+      setCollectedColors([]);
+      setCurrentSteps(5230);
+      setCurrentView('home');
+      toast.success('로그아웃되었습니다');
+    } catch (error) {
+      console.error('로그아웃 실패:', error);
+      toast.error('로그아웃에 실패했습니다');
+    }
+  };
+
+  // 로그인하지 않은 경우 로그인 화면 표시
+  if (!currentUser) {
+    return (
+      <>
+        <Toaster />
+        <Auth />
+      </>
+    );
+  }
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 to-gray-100">
+        <div className="text-center">
+          <div className="w-12 h-12 rounded-full bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 mx-auto mb-4 animate-pulse" />
+          <p className="text-gray-500">로딩 중...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 pb-20">
@@ -171,9 +233,20 @@ export default function App() {
       {/* 헤더 */}
       <header className="bg-white shadow-sm sticky top-0 z-40">
         <div className="max-w-2xl mx-auto px-6 py-4">
-          <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-full bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400" />
-            <h1 className="text-gray-800">HueColor</h1>
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <div className="w-8 h-8 rounded-full bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400" />
+              <h1 className="text-gray-800">HueColor</h1>
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="text-sm text-gray-500">{currentUser.email}</span>
+              <button
+                onClick={handleLogout}
+                className="text-sm text-gray-500 hover:text-gray-700 px-2 py-1 rounded hover:bg-gray-100"
+              >
+                로그아웃
+              </button>
+            </div>
           </div>
         </div>
       </header>
