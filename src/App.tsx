@@ -67,12 +67,22 @@ const generateSampleMarbles = (): DayMarble[] => {
       palette[idx % palette.length]
     );
 
-    marbles.push({
-      date: dateStr,
-      colors,
-      steps: Math.floor(seededRandom(dateSeed + 1) * 8000) + 2000,
-      distance: +(seededRandom(dateSeed + 2) * 5 + 1).toFixed(1),
-    });
+    // 11-11 날짜는 고정값 사용
+    if (dateStr === '2025-11-11') {
+      marbles.push({
+        date: dateStr,
+        colors,
+        steps: 3164,
+        distance: 2.1,
+      });
+    } else {
+      marbles.push({
+        date: dateStr,
+        colors,
+        steps: Math.floor(seededRandom(dateSeed + 1) * 8000) + 2000,
+        distance: +(seededRandom(dateSeed + 2) * 5 + 1).toFixed(1),
+      });
+    }
   }
 
   return marbles;
@@ -82,7 +92,7 @@ export default function App() {
   const [currentView, setCurrentView] = useState<View>('home');
   const [todayColor, setTodayColor] = useState(allColors[0]);
   const [todayColorName, setTodayColorName] = useState(allColors[0].desc);
-  const [currentSteps, setCurrentSteps] = useState(5230);
+  const [currentSteps, setCurrentSteps] = useState(0);
   const [collectedColors, setCollectedColors] = useState<CollectedColor[]>([]);
   const [marbles, setMarbles] = useState<DayMarble[]>(generateSampleMarbles());
   const [walkStarted, setWalkStarted] = useState(false);
@@ -112,6 +122,10 @@ export default function App() {
 
   const handleColorNameChange = (name: string) => {
     setTodayColorName(name);
+  };
+
+  const handleStepsIncrement = () => {
+    setCurrentSteps(prev => prev + 1);
   };
 
   const handleColorCollected = (color: string, imageUrl: string) => {
@@ -187,6 +201,7 @@ export default function App() {
             steps={currentSteps}
             onStartWalk={handleStartWalk}
             onColorNameChange={handleColorNameChange}
+            onStepsIncrement={handleStepsIncrement}
           />
         )}
 
