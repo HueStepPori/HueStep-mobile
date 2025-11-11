@@ -220,35 +220,35 @@ export function MarbleView({ colors, steps, distance, date, onContinue, onShare 
         <div className="grid grid-cols-3 gap-4">
           <div className="text-center">
             <Footprints className="w-6 h-6 text-blue-500 mx-auto mb-2" />
-            <p className="text-gray-500 mb-1">걸음 수</p>
-            <p className="text-gray-800">{steps.toLocaleString()}</p>
+            <p className="text-gray-500 mb-1 font-semibold">걸음 수</p>
+            <p className="text-gray-800 text-lg font-bold">{steps.toLocaleString()}</p>
           </div>
           <div className="text-center">
             <MapPin className="w-6 h-6 text-green-500 mx-auto mb-2" />
-            <p className="text-gray-500 mb-1">거리</p>
-            <p className="text-gray-800">{distance}km</p>
+            <p className="text-gray-500 mb-1 font-semibold">거리</p>
+            <p className="text-gray-800 text-lg font-bold">{distance}km</p>
           </div>
           <div className="text-center">
             <Palette className="w-6 h-6 text-purple-500 mx-auto mb-2" />
-            <p className="text-gray-500 mb-1">수집 색상</p>
-            <p className="text-gray-800">{colors.length}개</p>
+            <p className="text-gray-500 mb-1 font-semibold">수집 색상</p>
+            <p className="text-gray-800 text-lg font-bold">{colors.length}개</p>
           </div>
         </div>
 
         {/* 색상 팔레트 */}
         {colors.length > 0 && (
           <div className="mt-6 pt-6 border-t border-gray-100">
-            <p className="text-gray-500 mb-3">오늘의 컬러 팔레트</p>
+            <p className="text-gray-500 mb-3 font-semibold text-lg">오늘의 컬러 팔레트</p>
             <div className="flex gap-2">
               {colors.map((color, index) => (
                 <div key={index} className="flex-1 text-center">
-                  <div 
+                  <div
                     className="w-full aspect-square rounded-xl mb-2 shadow-md relative"
                     style={{ backgroundColor: color }}
                   >
                     <div className="absolute inset-0 rounded-xl bg-gradient-to-br from-white/30 via-transparent to-transparent" />
                   </div>
-                  <p className="text-xs text-gray-400">{color}</p>
+                  <p className="text-sm text-gray-400 font-medium">{color}</p>
                 </div>
               ))}
             </div>
@@ -257,16 +257,16 @@ export function MarbleView({ colors, steps, distance, date, onContinue, onShare 
       </motion.div>
 
       <div className="flex gap-3 w-full max-w-md">
-        <Button 
+        <Button
           onClick={onShare}
           variant="outline"
-          className="flex-1 py-6 rounded-full border-2"
+          className="flex-1 py-6 rounded-full border-2 text-lg font-semibold"
         >
           팔레트 공유하기
         </Button>
-        <Button 
+        <Button
           onClick={onContinue}
-          className="flex-1 bg-gradient-to-r from-blue-500 to-purple-500 text-white py-6 rounded-full shadow-lg"
+          className="flex-1 bg-gradient-to-r from-blue-500 to-purple-500 text-white py-6 rounded-full shadow-lg text-lg font-semibold"
         >
           캘린더 보기
         </Button>

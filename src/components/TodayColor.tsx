@@ -58,9 +58,10 @@ interface TodayColorProps {
   steps: number;
   onStartWalk: () => void;
   onColorNameChange: (name: string) => void;
+  onStepsIncrement: () => void;
 }
 
-export function TodayColor({ color, colorName, steps, onStartWalk, onColorNameChange }: TodayColorProps) {
+export function TodayColor({ color, colorName, steps, onStartWalk, onColorNameChange, onStepsIncrement }: TodayColorProps) {
   const [isEditingName, setIsEditingName] = useState(false);
   const [editedName, setEditedName] = useState(colorName);
 
@@ -73,14 +74,14 @@ export function TodayColor({ color, colorName, steps, onStartWalk, onColorNameCh
   };
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-[70vh] px-6 pt-32">
-      <div className="flex items-center gap-2 mb-12 mt-4">
+    <div className="flex flex-col items-center justify-center min-h-[70vh] px-6 pt-20">
+      <div className="flex items-center gap-2 mb-6 mt-4">
         <Sparkles className="w-5 h-5 text-purple-400" />
         <span className="text-gray-500">오늘의 컬러</span>
       </div>
 
       {/* 메인 컬러 bubble - 캘린더와 동일한 스타일 */}
-      <div className="relative w-56 h-56 mb-8">
+      <div className="relative w-56 h-56 mb-6">
         <div
           className="w-full h-full rounded-full overflow-hidden relative"
           style={{ isolation: 'isolate' }}
@@ -141,7 +142,7 @@ export function TodayColor({ color, colorName, steps, onStartWalk, onColorNameCh
 
       {/* 색상 이름 편집 */}
       {isEditingName ? (
-        <div className="flex items-center gap-2 mb-8">
+        <div className="flex items-center gap-2 mb-4">
           <Input
             value={editedName}
             onChange={(e) => setEditedName(e.target.value)}
@@ -153,7 +154,7 @@ export function TodayColor({ color, colorName, steps, onStartWalk, onColorNameCh
           </Button>
         </div>
       ) : (
-        <div className="flex items-center gap-2 mb-8">
+        <div className="flex items-center gap-2 mb-4">
           <h2>{colorName}</h2>
           <button
             onClick={() => setIsEditingName(true)}
@@ -165,14 +166,16 @@ export function TodayColor({ color, colorName, steps, onStartWalk, onColorNameCh
       )}
 
       {/* 걸음 수 표시 */}
-      <div className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-gray-50 to-gray-100 rounded-full mb-8">
-        <Footprints className="w-5 h-5 text-gray-400" />
-        <span className="text-gray-700">{steps.toLocaleString()}걸음</span>
-      </div>
+      <button
+        onClick={onStepsIncrement}
+        className="flex items-center justify-center text-gray-700 text-lg font-semibold cursor-pointer mb-6 hover:opacity-70 transition-opacity"
+      >
+        <span>{steps.toLocaleString()}걸음</span>
+      </button>
 
       <Button
         onClick={onStartWalk}
-        className="px-8 py-6 rounded-full shadow-lg text-white hover:opacity-90 transition-opacity"
+        className="px-8 py-6 rounded-full shadow-lg text-white hover:opacity-90 transition-opacity text-xl font-semibold mb-4"
         style={{
           background: `linear-gradient(135deg, ${displayColor}, ${adjustBrightness(displayColor, -15)})`,
         }}
@@ -180,7 +183,7 @@ export function TodayColor({ color, colorName, steps, onStartWalk, onColorNameCh
         컬러 워크 시작하기
       </Button>
 
-      <p className="text-gray-400 mt-4 text-center max-w-xs">
+      <p className="text-gray-400 mt-3 text-center max-w-xs">
         산책하며 {colorName}을 찾아보세요!
       </p>
     </div>

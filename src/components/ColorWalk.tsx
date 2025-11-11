@@ -265,35 +265,35 @@ export function ColorWalk({ todayColor, todayColorName, collectedColors, onColor
       <canvas ref={canvasRef} className="hidden" />
       
       <div className="text-center mb-8">
-        <h2 className="mb-2">컬러 워크</h2>
-        <p className="text-gray-500 text-sm">주변에서 색을 찾아 사진을 찍어보세요</p>
+        <h2 className="mb-2 text-2xl font-bold">컬러 워크</h2>
+        <p className="text-gray-500 text-base">주변에서 색을 찾아 사진을 찍어보세요</p>
       </div>
 
       {/* 오늘의 목표 색상 */}
       <div className="bg-white rounded-3xl p-6 shadow-sm mb-6">
-        <p className="text-gray-500 mb-3">오늘의 목표 색상</p>
+        <p className="text-gray-500 mb-3 font-semibold">오늘의 목표 색상</p>
         <div className="flex items-center gap-3">
           <div className="relative w-12 h-12 flex-shrink-0">
-            <div 
+            <div
               className="w-full h-full rounded-full shadow-md"
               style={{ backgroundColor: todayColor }}
             >
               <div className="absolute inset-0 rounded-full bg-gradient-to-br from-white/40 via-transparent to-transparent" />
             </div>
           </div>
-          <span>{todayColorName}</span>
+          <span className="text-lg font-semibold">{todayColorName}</span>
         </div>
       </div>
 
       {/* 수집된 색상들 */}
       {collectedColors.length > 0 && (
         <div className="bg-white rounded-3xl p-6 shadow-sm mb-6">
-          <p className="text-gray-500 mb-3">수집한 색상 ({collectedColors.length})</p>
+          <p className="text-gray-500 mb-3 font-semibold text-lg">수집한 색상 ({collectedColors.length})</p>
           <div className="grid grid-cols-3 gap-3">
             {collectedColors.map((item, index) => (
               <div key={index} className="flex flex-col gap-2 group relative">
                 <div
-                  className="w-full aspect-square rounded-2xl shadow-md relative overflow-hidden"  // ★ CHANGED: overflow-hidden 추가
+                  className="w-full aspect-square rounded-2xl shadow-md relative overflow-hidden"
                   style={{
                     backgroundImage: `url(${item.imageUrl})`,
                     backgroundSize: 'cover',
@@ -301,9 +301,9 @@ export function ColorWalk({ todayColor, todayColorName, collectedColors, onColor
                   }}
                 >
                   <button
-                    type="button"  // ★ CHANGED: type 명시
+                    type="button"
                     onClick={() => onColorDeleted(index)}
-                    className="absolute top-2 right-2 bg-white/90 hover:bg-red-500 hover:text-white rounded-full p-2 shadow-md transition-all z-20"  // ★ CHANGED: top/right 조정, z-강화
+                    className="absolute top-2 right-2 bg-white/90 hover:bg-red-500 hover:text-white rounded-full p-2 shadow-md transition-all z-20"
                     title="삭제"
                     aria-label="수집한 사진 삭제"
                   >
@@ -313,7 +313,7 @@ export function ColorWalk({ todayColor, todayColorName, collectedColors, onColor
                     className="absolute bottom-0 inset-x-0 h-8 flex items-center justify-center"
                     style={{ backgroundColor: item.color }}
                   >
-                    <span className="text-xs text-white drop-shadow-md">{item.color}</span>
+                    <span className="text-sm text-white drop-shadow-md font-medium">{item.color}</span>
                   </div>
                 </div>
               </div>
@@ -331,7 +331,7 @@ export function ColorWalk({ todayColor, todayColorName, collectedColors, onColor
           >
             <Camera className="w-14 h-14 text-gray-300" />
             <div className="text-center">
-              <p className="text-gray-600 text-sm">사진 추가하기</p>
+              <p className="text-gray-600 text-lg font-semibold">사진 추가하기</p>
             </div>
           </button>
 
@@ -476,7 +476,7 @@ export function ColorWalk({ todayColor, todayColorName, collectedColors, onColor
             {isPickingColor && (
               <div className="absolute top-4 left-4 bg-white/90 backdrop-blur-sm px-4 py-2 rounded-full flex items-center gap-2 shadow-lg">
                 <Droplet className="w-4 h-4 text-blue-500" />
-                <span className="text-sm">색상을 클릭하세요</span>
+                <span className="text-base font-semibold">색상을 클릭하세요</span>
               </div>
             )}
 
@@ -495,7 +495,7 @@ export function ColorWalk({ todayColor, todayColorName, collectedColors, onColor
           {pickedColor && (
             <div className="flex items-center gap-4 mb-4 p-4 bg-gray-50 rounded-2xl">
               <div className="relative w-16 h-16 flex-shrink-0">
-                <div 
+                <div
                   className="w-full h-full rounded-full shadow-lg"
                   style={{ backgroundColor: pickedColor }}
                 >
@@ -503,8 +503,8 @@ export function ColorWalk({ todayColor, todayColorName, collectedColors, onColor
                 </div>
               </div>
               <div className="flex-1">
-                <p className="text-gray-500">선택된 색상</p>
-                <p className="text-gray-700">{pickedColor}</p>
+                <p className="text-gray-500 font-semibold">선택된 색상</p>
+                <p className="text-gray-700 text-lg font-semibold">{pickedColor}</p>
               </div>
             </div>
           )}
@@ -544,9 +544,9 @@ export function ColorWalk({ todayColor, todayColorName, collectedColors, onColor
 
       {/* 워크 종료 버튼 */}
       {collectedColors.length > 0 && (
-        <Button 
+        <Button
           onClick={onFinish}
-          className="w-full mt-6 bg-gradient-to-r from-purple-500 to-pink-500 text-white py-6 rounded-full"
+          className="w-full mt-6 bg-gradient-to-r from-purple-500 to-pink-500 text-white py-6 rounded-full text-lg font-semibold"
         >
           워크 종료하고 구슬 만들기
         </Button>

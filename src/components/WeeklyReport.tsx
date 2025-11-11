@@ -124,8 +124,8 @@ export function WeeklyReport({ marbles, todayColor }: WeeklyReportProps) {
   return (
     <div className="px-6 py-8 max-w-2xl mx-auto">
       <div className="text-center mb-8">
-        <h2 className="mb-2">주간 리포트</h2>
-        <p className="text-gray-500">지난 7일간의 걸음을 돌아봐요</p>
+        <h2 className="mb-2 text-2xl font-bold">주간 리포트</h2>
+        <p className="text-gray-500 text-base">지난 7일간의 걸음을 돌아봐요</p>
       </div>
 
       {/* 헤더 카드 - 오늘의 컬러 그라데이션 배경 */}
@@ -141,9 +141,9 @@ export function WeeklyReport({ marbles, todayColor }: WeeklyReportProps) {
         <div className="absolute inset-0 bg-gradient-to-br from-white/20 via-transparent to-transparent" />
         
         <div className="relative z-10">
-          <p className="text-white/90 mb-2 text-sm">이번 주 걸음 기록</p>
-          <h2 className="mb-4 text-white text-lg">총 {totalSteps.toLocaleString()}보!</h2>
-          <p className="text-white/80 text-sm">
+          <p className="text-white/90 mb-2 text-base font-semibold">이번 주 걸음 기록</p>
+          <h2 className="mb-4 text-white text-2xl font-bold">총 {totalSteps.toLocaleString()}보!</h2>
+          <p className="text-white/80 text-base">
             평균 {avgSteps.toLocaleString()}걸음을 걸었어요<br/>
             계속해서 색을 모아보세요!
           </p>
@@ -159,9 +159,9 @@ export function WeeklyReport({ marbles, todayColor }: WeeklyReportProps) {
           className="bg-white rounded-3xl p-6 shadow-sm"
         >
           <TrendingUp className="w-6 h-6 text-blue-500 mb-2" />
-          <p className="text-gray-500 mb-1 text-xs">평균 걸음</p>
-          <p className="text-lg text-gray-800">{avgSteps.toLocaleString()}</p>
-          <p className="text-[0.6rem] text-gray-400 mt-1">걸음/일</p>
+          <p className="text-gray-500 mb-1 text-sm font-semibold">평균 걸음</p>
+          <p className="text-xl font-bold text-gray-800">{avgSteps.toLocaleString()}</p>
+          <p className="text-xs text-gray-400 mt-1 font-medium">걸음/일</p>
         </motion.div>
 
         <motion.div
@@ -171,9 +171,9 @@ export function WeeklyReport({ marbles, todayColor }: WeeklyReportProps) {
           className="bg-white rounded-3xl p-6 shadow-sm"
         >
           <Palette className="w-6 h-6 text-purple-500 mb-2" />
-          <p className="text-gray-500 mb-1 text-xs">수집 색상</p>
-          <p className="text-lg text-gray-800">{totalColors}</p>
-          <p className="text-[0.6rem] text-gray-400 mt-1">개</p>
+          <p className="text-gray-500 mb-1 text-sm font-semibold">수집 색상</p>
+          <p className="text-xl font-bold text-gray-800">{totalColors}</p>
+          <p className="text-xs text-gray-400 mt-1 font-medium">개</p>
         </motion.div>
       </div>
 
@@ -184,20 +184,20 @@ export function WeeklyReport({ marbles, todayColor }: WeeklyReportProps) {
         transition={{ delay: 0.3 }}
         className="bg-white rounded-3xl p-6 shadow-sm"
       >
-        <h3 className="mb-3">주간 타임라인</h3>
-        <div className="space-y-2">
+        <h3 className="mb-4 text-lg font-bold">주간 타임라인</h3>
+        <div className="space-y-4">
           {recentMarbles.map((marble, index) => {
             const mainColor = marble.colors.length > 0 ? marble.colors[0] : '#e5e7eb';
 
             return (
-              <div key={marble.date} className="flex items-center gap-2">
-                <div className="text-xs text-gray-500 w-16">
+              <div key={marble.date} className="flex items-center gap-3 p-3 bg-white rounded-2xl">
+                <div className="text-sm text-gray-500 w-20 font-semibold">
                   {new Date(marble.date).toLocaleDateString('ko-KR', { month: 'short', day: 'numeric' })}
                 </div>
-                
+
                 {/* 예쁜 bubble 구슬 */}
                 <div
-                  className="relative w-14 h-14 flex-shrink-0 rounded-full overflow-hidden"
+                  className="relative w-14 h-14 flex-shrink-0 rounded-full"
                   style={{ isolation: 'isolate' }}
                 >
                   {/* (A) 색 레이어 */}
@@ -270,10 +270,10 @@ export function WeeklyReport({ marbles, todayColor }: WeeklyReportProps) {
                     }}
                   />
                 </div>
-                
+
                 <div className="flex-1">
-                  <p className="text-gray-700">{marble.steps.toLocaleString()}걸음</p>
-                  <p className="text-xs text-gray-400">{marble.distance}km · {marble.colors.length}색</p>
+                  <p className="text-gray-700 text-base font-semibold">{marble.steps.toLocaleString()}걸음</p>
+                  <p className="text-sm text-gray-400 font-medium">{marble.distance}km · {marble.colors.length}색</p>
                 </div>
               </div>
             );

@@ -161,8 +161,8 @@ export function ColorCalendar({ marbles }: ColorCalendarProps) {
   return (
     <div className="px-6 py-8 max-w-2xl mx-auto">
       <div className="text-center mb-8">
-        <h2 className="mb-2">컬러 캘린더</h2>
-        <p className="text-gray-500 text-sm">당신의 걸음이 색으로 기록됩니다</p>
+        <h2 className="mb-2 text-2xl font-bold">컬러 캘린더</h2>
+        <p className="text-gray-500 text-base">당신의 걸음이 색으로 기록됩니다</p>
       </div>
 
       {/* 월 네비게이션 */}
@@ -189,16 +189,16 @@ export function ColorCalendar({ marbles }: ColorCalendarProps) {
       {/* 캘린더 그리드 */}
       <div className="bg-white rounded-3xl p-6 shadow-sm mb-6">
         {/* 요일 헤더 */}
-        <div className="grid grid-cols-7 gap-2 mb-4">
+        <div className="grid grid-cols-7 gap-3 mb-4">
           {weekDays.map(day => (
-            <div key={day} className="text-center text-gray-400 py-2">
+            <div key={day} className="text-center text-gray-400 py-2 font-semibold">
               {day}
             </div>
           ))}
         </div>
 
         {/* 날짜 그리드 */}
-        <div className="grid grid-cols-7 gap-2">
+        <div className="grid grid-cols-7 gap-3">
           {/* 빈 칸 */}
           {Array.from({ length: startingDayOfWeek }).map((_, index) => (
             <div key={`empty-${index}`} className="aspect-square" />
@@ -216,23 +216,24 @@ export function ColorCalendar({ marbles }: ColorCalendarProps) {
               <button
                 key={day}
                 onClick={() => handleDayClick(day)}
-                className={`aspect-square rounded-2xl relative transition-all ${
-                  isSelected 
-                    ? 'ring-4 ring-blue-400' 
-                    : isToday 
-                    ? 'ring-2 ring-gray-300' 
+                className={`aspect-square rounded-2xl relative transition-all bg-white ${
+                  isSelected
+                    ? 'ring-4 ring-blue-400'
+                    : isToday
+                    ? 'ring-2 ring-gray-300'
                     : ''
                 }`}
+                style={{ overflow: 'visible' }}
               >
-                <div className="absolute top-1 left-1/2 -translate-x-1/2 text-xs text-gray-500 z-10">
+                <div className="absolute top-1 left-1/2 -translate-x-1/2 text-xs text-gray-500 z-10 font-semibold">
                   {day}
                 </div>
-                
+
                 {marble && marble.colors.length > 0 ? (
-                  <div className="absolute inset-0 flex items-center justify-center p-2">
+                  <div className="absolute inset-0 flex items-center justify-center p-1" style={{ overflow: 'visible' }}>
                     <div
-                      className="w-2/3 md:w-3/4 aspect-square rounded-full overflow-hidden"
-                      style={{ isolation: 'isolate' }}
+                      className="w-3/4 aspect-square rounded-full"
+                      style={{ isolation: 'isolate', overflow: 'visible', position: 'relative', zIndex: 5 }}
                     >
                       {/* (A) 색 레이어 */}
                       {(marble.colors.length === 1
@@ -309,22 +310,22 @@ export function ColorCalendar({ marbles }: ColorCalendarProps) {
       {/* 선택된 날짜 상세 정보 */}
       {selectedDay && (
         <div className="bg-white rounded-3xl p-6 shadow-lg">
-          <h3 className="mb-4">{selectedDay.date}</h3>
-          
+          <h3 className="mb-4 text-xl font-bold">{selectedDay.date}</h3>
+
           <div className="grid grid-cols-2 gap-4 mb-6">
             <div>
-              <p className="text-gray-500 mb-1">걸음 수</p>
-              <p className="text-gray-800">{selectedDay.steps.toLocaleString()}걸음</p>
+              <p className="text-gray-500 mb-1 font-semibold">걸음 수</p>
+              <p className="text-gray-800 text-lg font-bold">{selectedDay.steps.toLocaleString()}걸음</p>
             </div>
             <div>
-              <p className="text-gray-500 mb-1">이동 거리</p>
-              <p className="text-gray-800">{selectedDay.distance}km</p>
+              <p className="text-gray-500 mb-1 font-semibold">이동 거리</p>
+              <p className="text-gray-800 text-lg font-bold">{selectedDay.distance}km</p>
             </div>
           </div>
 
           {selectedDay.colors.length > 0 && (
             <div>
-              <p className="text-gray-500 mb-3">수집한 색상</p>
+              <p className="text-gray-500 mb-3 font-semibold text-lg">수집한 색상</p>
               <div className="flex gap-2">
                 {selectedDay.colors.map((color, index) => (
                   <div key={index} className="flex-1 text-center">
@@ -334,7 +335,7 @@ export function ColorCalendar({ marbles }: ColorCalendarProps) {
                         backgroundColor: color
                       }}
                     />
-                    <p className="text-xs text-gray-400">{color}</p>
+                    <p className="text-sm text-gray-400 font-medium">{color}</p>
                   </div>
                 ))}
               </div>
@@ -347,7 +348,7 @@ export function ColorCalendar({ marbles }: ColorCalendarProps) {
               setSelectedDate(null);
             }}
             variant="outline"
-            className="w-full mt-6"
+            className="w-full mt-6 text-lg font-semibold"
           >
             닫기
           </Button>
