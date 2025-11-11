@@ -165,11 +165,3 @@ src/
 - **Firestore 인덱싱** - 자동 인덱스 관리
 - **코드 스플리팅** - 필요 시 적용 가능
 
-## 추가 가능한 기능
-
-### 향후 확장 가능성
-- **Firebase Storage** - 이미지 업로드
-- **Firebase Cloud Messaging** - 푸시 알림
-- **Firebase Analytics** - 사용자 분석
-- **Firestore 실시간 리스너** - 실시간 동기화
-
