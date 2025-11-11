@@ -175,7 +175,7 @@ export function TodayColor({ color, colorName, steps, onStartWalk, onColorNameCh
 
       <Button
         onClick={onStartWalk}
-        className="px-8 py-6 rounded-full shadow-lg text-white hover:opacity-90 transition-opacity text-xl font-semibold mb-4"
+        className="px-8 py-6 rounded-full shadow-lg text-white hover:opacity-90 transition-opacity text-xl font-semibold mb-2"
         style={{
           background: `linear-gradient(135deg, ${displayColor}, ${adjustBrightness(displayColor, -15)})`,
         }}
