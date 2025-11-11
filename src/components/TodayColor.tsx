@@ -175,7 +175,7 @@ export function TodayColor({ color, colorName, steps, onStartWalk, onColorNameCh
 
       <Button
         onClick={onStartWalk}
-        className="px-8 py-6 rounded-full shadow-lg text-white hover:opacity-90 transition-opacity text-xl font-semibold mb-4"
+        className="px-8 py-6 rounded-full shadow-lg text-white hover:opacity-90 transition-opacity text-xl font-semibold mb-2"
         style={{
           background: `linear-gradient(135deg, ${displayColor}, ${adjustBrightness(displayColor, -15)})`,
         }}
@@ -183,7 +183,7 @@ export function TodayColor({ color, colorName, steps, onStartWalk, onColorNameCh
         컬러 워크 시작하기
       </Button>
 
-      <p className="text-gray-400 mt-4 text-center max-w-xs">
+      <p className="text-gray-400 mt-3 text-center max-w-xs">
         산책하며 {colorName}을(를) 찾아보세요!
       </p>
     </div>
