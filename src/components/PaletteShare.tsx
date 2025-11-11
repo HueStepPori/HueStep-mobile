@@ -314,7 +314,7 @@ export function PaletteShare({ colors, date, onClose }: PaletteShareProps) {
   // ---- UI --------------------------------------------------------------------
   return (
     <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-6">
-      <div className="bg-white rounded-3xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+      <div className="bg-white rounded-3xl w-full max-w-3xl max-h-[90vh] overflow-y-auto">
         <div className="sticky top-0 bg-white border-b px-6 py-4 flex items-center justify-between rounded-t-3xl">
           <h3 className="text-base font-semibold">팔레트 공유</h3>
           <button onClick={onClose} className="p-2 hover:bg-gray-100 rounded-full transition-colors">
@@ -324,7 +324,7 @@ export function PaletteShare({ colors, date, onClose }: PaletteShareProps) {
 
         <div className="p-6 space-y-6">
           {/* 대표 사진 선택 */}
-          <section className="pb-8">
+          <section className="pb-8 sticky top-16 bg-white z-10">
             <p className="text-gray-500 mb-4">대표 사진 선택</p>
             <div className="flex gap-2 flex-wrap overflow-x-auto pb-1 scrollbar-hide">
               {colors.map((item, index) => (

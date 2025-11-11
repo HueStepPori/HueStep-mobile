@@ -438,7 +438,7 @@ export function ColorWalk({ todayColor, todayColorName, collectedColors, onColor
       ) : (
         <div className="bg-white rounded-3xl p-6 shadow-sm">
           <div className="relative mb-4">
-            <div className="relative w-full flex justify-center items-center bg-gray-50 rounded-2xl overflow-hidden h-64">
+            <div className="relative w-full flex justify-center items-center bg-gray-50 rounded-2xl overflow-hidden" style={{ height: '150px' }}>
               {preview && (
                 <>
                   <img
