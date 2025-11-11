@@ -39,7 +39,7 @@
 
 ### Firebase SDK
 ```bash
-firebase (최신 버전)
+firebase 7.0.0
 ```
 
 ## 상태 관리
