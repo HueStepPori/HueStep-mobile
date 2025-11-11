@@ -74,11 +74,15 @@ const generateSampleMarbles = (): DayMarble[] => {
         distance: 2,
       });
     } else {
+      // 걸음 수: 1,500 ~ 5,000 (3,164를 중심으로 범위 설정)
+      const steps = Math.floor(seededRandom(dateSeed + 1) * 3500) + 1500;
+      // 거리 = 걸음수 / 1600 (3,164걸음 = 약 2km 비율 유지)
+      const distance = +(steps / 1600).toFixed(1);
       marbles.push({
         date: dateStr,
         colors,
-        steps: Math.floor(seededRandom(dateSeed + 1) * 8000) + 2000,
-        distance: +(seededRandom(dateSeed + 2) * 5 + 1).toFixed(1),
+        steps,
+        distance,
       });
     }
   }
