@@ -230,9 +230,9 @@ export function ColorCalendar({ marbles }: ColorCalendarProps) {
                 </div>
 
                 {marble && marble.colors.length > 0 ? (
-                  <div className="absolute inset-0 flex items-center justify-center p-1" style={{ overflow: 'visible' }}>
+                  <div className="absolute inset-0 flex items-center justify-center p-0" style={{ overflow: 'visible' }}>
                     <div
-                      className="w-3/4 aspect-square rounded-full"
+                      className="w-5/6 aspect-square rounded-full"
                       style={{ isolation: 'isolate', overflow: 'visible', position: 'relative', zIndex: 5 }}
                     >
                       {/* (A) 색 레이어 */}

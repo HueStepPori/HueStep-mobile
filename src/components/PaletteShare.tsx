@@ -15,7 +15,7 @@ type Point = { x: number; y: number };
 // ---- Canvas / Frame constants ------------------------------------------------
 // Export will exactly match preview: we render preview in a square frame (1:1)
 // and export the same layout at higher pixel density.
-const PREVIEW_SIZE = 340; // CSS pixels for on-screen preview (square) - 축소됨
+const PREVIEW_SIZE = 300; // CSS pixels for on-screen preview (square) - 더 축소됨
 const EXPORT_SIZE = 2048; // canvas pixels for saved image (square)
 
 export function PaletteShare({ colors, date, onClose }: PaletteShareProps) {
